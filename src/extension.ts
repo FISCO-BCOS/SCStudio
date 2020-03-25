@@ -75,7 +75,7 @@ async function handleChange(event:any) {
 }
 
 async function recommend(curLen : number, currentSen : any, curContext : string) {
-	const uri = '49.235.239.68:9066/predict'
+	const uri = '49.235.239.68:9065/predict'
         // set two minutes as a limit duration of testing
         let strjson = JSON.stringify({sentence:currentSen,
         curLine:curLen,
