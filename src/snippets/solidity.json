@@ -1,0 +1,11 @@
+{
+    "for循环": {
+        "prefix": "\r\n",
+        "body": [
+          "for (const ${2:item} of ${1:array}) {",
+          "\t$0",
+          "}"
+        ],
+        "description": "for循环"
+    }
+}
