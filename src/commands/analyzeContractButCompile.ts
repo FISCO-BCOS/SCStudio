@@ -62,7 +62,6 @@ export async function analyzeContract(
                         '/',
                     )
                     rootDirectory =
-
                         rootDirectory[rootDirectory.length - 1]
 
                     vscode.window
@@ -79,8 +78,9 @@ export async function analyzeContract(
                     const uri = '49.235.239.68:9090/contract'                      
                     let curname = contractName + Date.parse(new Date().toString());
                     // set two minutes as a limit duration of testing
-                    const respBody = await postRequest(uri,{name:curname,contractcode:fileContent,limit:30});
-                    updateDiagnostics(dc, diagnosticCollection, respBody);                     
+                    const respBody = await postRequest(uri,{name:curname,contractcode:fileContent,limit:10});
+                    updateDiagnostics(dc, diagnosticCollection, respBody);
+                                           
                     if (!respBody) {
                         vscode.window.showInformationMessage(
                             `SmartIDE: No security issues found in your contract.`,
@@ -106,12 +106,10 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
         vscode.languages.getDiagnostics(document.uri).slice(1,1);
         obj = JSON.parse(JSON.stringify(obj.text))
         let json_res = JSON.parse(obj)
-        console.log(json_res)
         for(var ent in json_res.vulnerabilities){
             // console.log(ent)
             if(json_res.vulnerabilities[ent]){
-                let message = `Name: `+json_res.vulnerabilities[ent].name 
-                // + `; Description: ` + json_res.vulnerabilities[ent].description;
+                let message = `Name: `+json_res.vulnerabilities[ent].name + `; Description: ` + json_res.vulnerabilities[ent].description;
                 let range = document.lineAt(json_res.vulnerabilities[ent].lineNo[0]-1).range;
                 
                 let severity : any;
@@ -121,7 +119,6 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
                 else{
                     severity = vscode.DiagnosticSeverity.Error;
                 }
-                severity = vscode.DiagnosticSeverity.Error;
                 // let relatedInformation = ''
                 let diagnostic = new vscode.Diagnostic(range, message, severity);
                 diagnostics.push(diagnostic);
