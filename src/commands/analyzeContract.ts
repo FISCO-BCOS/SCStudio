@@ -61,9 +61,7 @@ export async function analyzeContract(
                     let rootDirectory: any = directoryPath.split(
                         '/',
                     )
-                    rootDirectory =
-
-                        rootDirectory[rootDirectory.length - 1]
+                    rootDirectory = rootDirectory[rootDirectory.length - 1]
 
                     vscode.window
                         .showInformationMessage(

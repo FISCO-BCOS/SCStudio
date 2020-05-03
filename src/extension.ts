@@ -51,6 +51,7 @@ export function activate(context: vscode.ExtensionContext) {
 				if(s.charCodeAt(0)===13){
 					// vscode.Range.arguments
 					console.log('we found the enter key')
+					
 					if(event.contentChanges[0].range){
 						let range = event.contentChanges[0].range;
 						let str_range = JSON.stringify(range);
