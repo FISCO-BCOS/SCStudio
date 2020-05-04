@@ -13,11 +13,11 @@ export async function analyzeContract(
     fileUri: vscode.Uri,
     dc: vscode.TextDocument
 ): Promise<void> {
-    await vscode!.extensions!
-        .getExtension('JuanBlanco.solidity')!
-        .activate()
-        .then(
-            async () => {
+    // await vscode!.extensions!
+    //     .getExtension('JuanBlanco.solidity')!
+    //     .activate()
+    //     .then(
+            // async () => {
                 try { 
                     await vscode!.extensions!.getExtension('philhindle.errorlens')!.activate().then(
                         // async () => {
@@ -92,8 +92,8 @@ export async function analyzeContract(
             } catch (err) {
                 vscode.window.showErrorMessage(`SmartIDE: ${err}`)
             }
-            }, 
-        )
+            // }, 
+        // )
 }
 
 function updateDiagnostics(document: vscode.TextDocument | undefined, collection: vscode.DiagnosticCollection, obj:any): void {
