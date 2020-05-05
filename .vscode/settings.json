@@ -11,19 +11,19 @@
 
     // Controls if quick suggestions should show up while typing
     "editor.quickSuggestions": {
-        "other": true,
+        "other": false,
         "comments": false,
         "strings": false
     },
 
      // Controls whether suggestions should be accepted on commit characters. For example, in JavaScript, the semi-colon (`;`) can be a commit character that accepts a suggestion and types that character.
-    "editor.acceptSuggestionOnCommitCharacter": true,
+    "editor.acceptSuggestionOnCommitCharacter": false,
 
     // Controls if suggestions should be accepted on 'Enter' - in addition to 'Tab'. Helps to avoid ambiguity between inserting new lines or accepting suggestions. The value 'smart' means only accept a suggestion with Enter when it makes a textual change
     "editor.acceptSuggestionOnEnter": "on",
 
     // Controls the delay in ms after which quick suggestions will show up.
-    "editor.quickSuggestionsDelay": 10,
+    "editor.quickSuggestionsDelay": 90,
 
     // Controls if suggestions should automatically show up when typing trigger characters
     "editor.suggestOnTriggerCharacters": true,

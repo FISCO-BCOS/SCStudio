@@ -6,6 +6,15 @@ import {analyzeContract} from "./commands/analyzeContract";
 import {ItemProvider} from "./utils/itemProvider";
 import {getFileContent} from "./utils/getFileContent";
 import {postStringRequest} from "./utils/httpUtils";
+import {
+    LanguageClient,
+    LanguageClientOptions,
+    ServerOptions,
+    TransportKind
+} from 'vscode-languageclient';
+import * as path from 'path'
+
+let client: LanguageClient;
 
 
 let diagnosticsCollection: vscode.DiagnosticCollection
@@ -30,9 +39,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// vscode.window.showInformationMessage('Hello World!');
 		analyzeContract(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document)
 	});
-
-	// let demoProvider = new ItemProvider();
-	// let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider);   
+ 
 	let disprovideStatement = vscode.commands.registerCommand('smartide.disablerecommand', () => {
 		recommendEnabled = false;
 	}); 
@@ -51,7 +58,6 @@ export function activate(context: vscode.ExtensionContext) {
 				if(s.charCodeAt(0)===13){
 					// vscode.Range.arguments
 					console.log('we found the enter key')
-					
 					if(event.contentChanges[0].range){
 						let range = event.contentChanges[0].range;
 						let str_range = JSON.stringify(range);
@@ -62,64 +68,75 @@ export function activate(context: vscode.ExtensionContext) {
 							vscode.window!.activeTextEditor!.document.uri,
 						)
 						// console.log('current line:' + currentLine + " currentSen: "+ currentSen + " curContext: "+curContext)
-						// let respBody = await recommend(currentLine, currentSen, curContext);
-						// console.log('results: '+JSON.parse(respBody.text).data.results)
-						let provider1 = vscode.languages.registerCompletionItemProvider('plaintext', {
+						let respBody = await recommend(currentLine, currentSen, curContext);
+						console.log('results: '+JSON.parse(respBody.text).data.results)
+						let res = JSON.parse(respBody.text).data.results
+						let codes : string[]
+						codes = []
+						for(var i in res){
+							codes = codes.concat(res[i])
+						}
+						let demoProvider = new ItemProvider(codes);
+						let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider);  
+						context.subscriptions.push(solPv);
+					}
+				}
 
-							provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
-								// a simple completion item which inserts `Hello World!`
-								const simpleCompletion1 = new vscode.CompletionItem('if (msg.gas < 100000) break;');
-								let csen = "";
-								if(currentSen){
-									csen = currentSen;
-								}
-								const simpleCompletion2 = new vscode.CompletionItem('uint x = accounts[i].balance;');
-								const simpleCompletion3 = new vscode.CompletionItem('uint newVal = accounts[i].balance;');
-								const simpleCompletion4 = new vscode.CompletionItem('accounts[i].balance += 1;');
-								const simpleCompletion5 = new vscode.CompletionItem('break;');
-							
-								// return all completion items as array
-								return [
-									simpleCompletion1,
-									simpleCompletion2,
-									simpleCompletion3,
-									simpleCompletion4,
-									simpleCompletion5
-								];
-							}
-						});
-						context.subscriptions.push(provider1);
+				if(s.charCodeAt(0)===32){
+					// vscode.Range.arguments
+					console.log('we found the space')
+					if(event.contentChanges[0].range){
+						let range = event.contentChanges[0].range;
+						let str_range = JSON.stringify(range);
+						let json_range = JSON.parse(str_range);
+						let currentLine = json_range[0].line + 1;
+						let currentSen = vscode.window.activeTextEditor?.document.lineAt(currentLine - 1).text;
+						let curContext = await getFileContent(
+							vscode.window!.activeTextEditor!.document.uri,
+						)
+						// console.log('current line:' + currentLine + " currentSen: "+ currentSen + " curContext: "+curContext)
+						let respBody = await recommendToken(currentLine, currentSen, curContext);
+						console.log('results: '+JSON.parse(respBody.text).data.results)
+						let res = JSON.parse(respBody.text).data.results
+						let codes : string[]
+						codes = []
+						for(var i in res){
+							codes = codes.concat(res[i])
+						}
+						let demoProvider = new ItemProvider(codes);
+						let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider);  
+						context.subscriptions.push(solPv);
 					}
 				}
 			}
 		})
 	}
-}
+	let serverModule = context.asAbsolutePath(
+        path.join('out', 'server.js')
+    );
 
-async function handleChange(event:any) {
-	// console.log("Change in the text editor")
-	if(event.contentChanges[0]){
-		var s = event.contentChanges[0].text
-		if(s.charCodeAt(0)===13){
-			// vscode.Range.arguments
-			console.log('we found the enter key')
-			if(event.contentChanges[0].range){
-				let range = event.contentChanges[0].range;
-				let str_range = JSON.stringify(range);
-				let json_range = JSON.parse(str_range);
-				let currentLine = json_range[0].line + 1;
-				let currentSen = vscode.window.activeTextEditor?.document.lineAt(currentLine - 1).text;
-				let curContext = await getFileContent(
-					vscode.window!.activeTextEditor!.document.uri,
-				)
-				// console.log('current line:' + currentLine + " currentSen: "+ currentSen + " curContext: "+curContext)
-				let respBody = await recommend(currentLine, currentSen, curContext);
-				console.log('results: '+JSON.parse(respBody.text).data.results)
-			}
-		}
-	}
+    let serverOptions: ServerOptions = {
+        module: serverModule, transport: TransportKind.ipc
+    };
+
+    // 客户端配置
 	
-    console.log(event);
+	const clientOptions: LanguageClientOptions = {
+        documentSelector: [
+            { language: 'solidity', scheme: 'file' },
+            { language: 'solidity', scheme: 'untitled' },
+        ]
+    };
+
+    client = new LanguageClient(
+        'solidity',
+        'Solidity Language Server',
+        serverOptions,
+        clientOptions
+    );
+
+    // 启动客户端，同时启动语言服务器
+    client.start();
 }
 
 async function recommend(curLen : number, currentSen : any, curContext : string) {
@@ -134,7 +151,23 @@ async function recommend(curLen : number, currentSen : any, curContext : string)
         if (!respBody) {
             vscode.window.showInformationMessage(
                 `SmartIDE: Error when providing recommend statements.`,
-		 
+				)
+        } 
+		console.log(respBody) 
+		return respBody;
+}
+
+async function recommendToken(curLen : number, currentSen : any, curContext : string) {
+	const uri = '49.235.239.68:9065/tokenPredict'
+        // set two minutes as a limit duration of testing
+        let strjson = JSON.stringify({
+        context:curContext})
+        // console.log(JSON.parse(strjson))
+        const respBody = await postStringRequest(uri,strjson);
+    
+        if (!respBody) {
+            vscode.window.showInformationMessage(
+                `SmartIDE: Error when providing recommend statements.`,
 				)
         } 
 		console.log(respBody) 
@@ -142,4 +175,9 @@ async function recommend(curLen : number, currentSen : any, curContext : string)
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+	if (!client) {
+        return undefined;
+    }
+    return client.stop();
+}
