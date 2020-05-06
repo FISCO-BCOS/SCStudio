@@ -6,15 +6,15 @@ import {analyzeContract} from "./commands/analyzeContract";
 import {ItemProvider} from "./utils/itemProvider";
 import {getFileContent} from "./utils/getFileContent";
 import {postStringRequest} from "./utils/httpUtils";
-import {
-    LanguageClient,
-    LanguageClientOptions,
-    ServerOptions,
-    TransportKind
-} from 'vscode-languageclient';
-import * as path from 'path'
+// import {
+//     LanguageClient,
+//     LanguageClientOptions,
+//     ServerOptions,
+//     TransportKind
+// } from 'vscode-languageclient';
+// import * as path from 'path'
 
-let client: LanguageClient;
+// let client: LanguageClient;
 
 
 let diagnosticsCollection: vscode.DiagnosticCollection
@@ -111,32 +111,32 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		})
 	}
-	let serverModule = context.asAbsolutePath(
-        path.join('out', 'server.js')
-    );
+	// let serverModule = context.asAbsolutePath(
+    //     path.join('out', 'server.js')
+    // );
 
-    let serverOptions: ServerOptions = {
-        module: serverModule, transport: TransportKind.ipc
-    };
+    // let serverOptions: ServerOptions = {
+    //     module: serverModule, transport: TransportKind.ipc
+    // };
 
-    // 客户端配置
+    // // 客户端配置
 	
-	const clientOptions: LanguageClientOptions = {
-        documentSelector: [
-            { language: 'solidity', scheme: 'file' },
-            { language: 'solidity', scheme: 'untitled' },
-        ]
-    };
+	// const clientOptions: LanguageClientOptions = {
+    //     documentSelector: [
+    //         { language: 'solidity', scheme: 'file' },
+    //         { language: 'solidity', scheme: 'untitled' },
+    //     ]
+    // };
 
-    client = new LanguageClient(
-        'solidity',
-        'Solidity Language Server',
-        serverOptions,
-        clientOptions
-    );
+    // client = new LanguageClient(
+    //     'solidity',
+    //     'Solidity Language Server',
+    //     serverOptions,
+    //     clientOptions
+    // );
 
-    // 启动客户端，同时启动语言服务器
-    client.start();
+    // // 启动客户端，同时启动语言服务器
+    // client.start();
 }
 
 async function recommend(curLen : number, currentSen : any, curContext : string) {
@@ -176,8 +176,8 @@ async function recommendToken(curLen : number, currentSen : any, curContext : st
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-	if (!client) {
-        return undefined;
-    }
-    return client.stop();
+	// if (!client) {
+    //     return undefined;
+    // }
+    // return client.stop();
 }
