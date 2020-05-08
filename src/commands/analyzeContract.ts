@@ -77,7 +77,7 @@ export async function analyzeContract(
                     const uri = '49.235.239.68:9090/contract'                      
                     let curname = contractName + Date.parse(new Date().toString());
                     // set two minutes as a limit duration of testing
-                    const respBody = await postRequest(uri,{name:curname,contractcode:fileContent,limit:30});
+                    const respBody = await postRequest(uri,{name:curname,contractcode:fileContent,limit:60});
                     updateDiagnostics(dc, diagnosticCollection, respBody);                     
                     if (!respBody) {
                         vscode.window.showInformationMessage(
@@ -119,7 +119,7 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
                 else{
                     severity = vscode.DiagnosticSeverity.Error;
                 }
-                severity = vscode.DiagnosticSeverity.Error;
+                // severity = vscode.DiagnosticSeverity.Error;
                 // let relatedInformation = ''
                 let diagnostic = new vscode.Diagnostic(range, message, severity);
                 diagnostics.push(diagnostic);

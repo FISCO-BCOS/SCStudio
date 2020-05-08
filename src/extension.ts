@@ -55,32 +55,32 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.workspace.onDidChangeTextDocument(async function(event){
 			if(event.contentChanges[0]){
 				var s = event.contentChanges[0].text
-				if(s.charCodeAt(0)===13){
-					// vscode.Range.arguments
-					console.log('we found the enter key')
-					if(event.contentChanges[0].range){
-						let range = event.contentChanges[0].range;
-						let str_range = JSON.stringify(range);
-						let json_range = JSON.parse(str_range);
-						let currentLine = json_range[0].line + 1;
-						let currentSen = vscode.window.activeTextEditor?.document.lineAt(currentLine - 1).text;
-						let curContext = await getFileContent(
-							vscode.window!.activeTextEditor!.document.uri,
-						)
-						// console.log('current line:' + currentLine + " currentSen: "+ currentSen + " curContext: "+curContext)
-						let respBody = await recommend(currentLine, currentSen, curContext);
-						console.log('results: '+JSON.parse(respBody.text).data.results)
-						let res = JSON.parse(respBody.text).data.results
-						let codes : string[]
-						codes = []
-						for(var i in res){
-							codes = codes.concat(res[i])
-						}
-						let demoProvider = new ItemProvider(codes);
-						let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider);  
-						context.subscriptions.push(solPv);
-					}
-				}
+				// if(s.charCodeAt(0)===13){
+				// 	// vscode.Range.arguments
+				// 	console.log('we found the enter key')
+				// 	if(event.contentChanges[0].range){
+				// 		let range = event.contentChanges[0].range;
+				// 		let str_range = JSON.stringify(range);
+				// 		let json_range = JSON.parse(str_range);
+				// 		let currentLine = json_range[0].line + 1;
+				// 		let currentSen = vscode.window.activeTextEditor?.document.lineAt(currentLine - 1).text;
+				// 		let curContext = await getFileContent(
+				// 			vscode.window!.activeTextEditor!.document.uri,
+				// 		)
+				// 		// console.log('current line:' + currentLine + " currentSen: "+ currentSen + " curContext: "+curContext)
+				// 		let respBody = await recommend(currentLine, currentSen, curContext);
+				// 		console.log('results: '+JSON.parse(respBody.text).data.results)
+				// 		let res = JSON.parse(respBody.text).data.results
+				// 		let codes : string[]
+				// 		codes = []
+				// 		for(var i in res){
+				// 			codes = codes.concat(res[i])
+				// 		}
+				// 		let demoProvider = new ItemProvider(codes);
+				// 		let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider);  
+				// 		context.subscriptions.push(solPv);
+				// 	}
+				// }
 
 				if(s.charCodeAt(0)===32){
 					// vscode.Range.arguments

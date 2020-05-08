@@ -74,15 +74,6 @@
             ],        
             "preLaunchTask": "npm: watch",
             "stopOnEntry": false
-        },
-        {
-            "type": "node",
-            "request": "attach",
-            "name": "Attach to Server",
-            "port": 6009,
-            "restart": true,
-            "outFiles": [                "${workspaceRoot}/out/src/**/*.js"
-            ]
         }
     ]
 }
