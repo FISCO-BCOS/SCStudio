@@ -16,7 +16,7 @@ SecSolidity: Analyze Contract
 ```
 For now, the time limit for each contract is set as 60 seconds.
 
-![Feature_Security_Check](img/secsolidity-analyze.gif)
+![Feature_Security_Check](img/secsolidity_analyze.gif)
 
 **b) Next token suggestion**
 
@@ -26,7 +26,7 @@ In order to use this function, the developer can click 'space' when he has finis
 ```
 Trigger Suggestion
 ```
-![Feature_Security_Check](img/secsolidity-token.gif)
+![Feature_Token](img/secsolidity_token.gif)
 
 **c) API completion**
 Secsolidity supports api completion for common structs in solidity language such as `msg` and `block`.
