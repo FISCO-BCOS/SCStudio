@@ -6,16 +6,7 @@ import {analyzeContract} from "./commands/analyzeContract";
 import {ItemProvider} from "./utils/itemProvider";
 import {getFileContent} from "./utils/getFileContent";
 import {postStringRequest} from "./utils/httpUtils";
-// import {
-//     LanguageClient,
-//     LanguageClientOptions,
-//     ServerOptions,
-//     TransportKind
-// } from 'vscode-languageclient';
-// import * as path from 'path'
-
-// let client: LanguageClient;
-
+import {GetContextualAutoCompleteByGlobalVariable} from "./utils/Apicompletion"
 
 let diagnosticsCollection: vscode.DiagnosticCollection
 
@@ -46,10 +37,14 @@ export function activate(context: vscode.ExtensionContext) {
 	let provideStatement = vscode.commands.registerCommand('smartide.enablerecommand', () => {
 		recommendEnabled = true;
 	}); 
+
     // context.subscriptions.push(solPv);
 	context.subscriptions.push(analyzeSub);
 	context.subscriptions.push(provideStatement);
 	context.subscriptions.push(disprovideStatement);
+	let demoProvider = new ItemProvider([],[]);
+	let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider,'.',' ');  
+	context.subscriptions.push(solPv);
 
 	if(recommendEnabled){
 		vscode.workspace.onDidChangeTextDocument(async function(event){
@@ -85,6 +80,8 @@ export function activate(context: vscode.ExtensionContext) {
 				if(s.charCodeAt(0)===32){
 					// vscode.Range.arguments
 					console.log('we found the space')
+					demoProvider.Items = [];
+					demoProvider.codeComs = [];
 					if(event.contentChanges[0].range){
 						let range = event.contentChanges[0].range;
 						let str_range = JSON.stringify(range);
@@ -103,9 +100,42 @@ export function activate(context: vscode.ExtensionContext) {
 						for(var i in res){
 							codes = codes.concat(res[i])
 						}
-						let demoProvider = new ItemProvider(codes);
-						let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider);  
-						context.subscriptions.push(solPv);
+						// codes = ['isOwner','returns','public','auth','{']
+						// let demoProvider1 = new ItemProvider(codes,[]);
+						// context.subscriptions.pop();
+						demoProvider.codeComs = codes;
+						
+						// let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider);
+						// context.subscriptions.push(solPv);
+					}
+				}
+				if(s.charCodeAt(0)===46){
+					// vscode.Range.arguments
+					console.log('we found the dot')
+					if(event.contentChanges[0].range){
+						let range = event.contentChanges[0].range;
+						let str_range = JSON.stringify(range);
+						let json_range = JSON.parse(str_range);
+						let currentLine = json_range[0].line + 1;
+						let currentSen = vscode.window.activeTextEditor?.document.lineAt(currentLine - 1).text;
+						let codes : string[]
+						codes = []
+						let start = 0
+						if (currentSen){
+							for(let i = 0;;i++){
+								if(currentSen[i] == '.'){
+									start = i
+									break;
+								}
+							}
+							const globalVariableContext = GetContextualAutoCompleteByGlobalVariable(currentSen, start);
+							// let NormalProvider = new ItemProvider([],globalVariableContext);
+							// context.subscriptions.pop()
+							// let solnorPv = vscode.languages.registerCompletionItemProvider("solidity", NormalProvider,'.');  
+							// context.subscriptions.push(solnorPv);
+							demoProvider.Items = globalVariableContext;
+							demoProvider.codeComs = [];
+						}
 					}
 				}
 			}
@@ -118,25 +148,6 @@ export function activate(context: vscode.ExtensionContext) {
     // let serverOptions: ServerOptions = {
     //     module: serverModule, transport: TransportKind.ipc
     // };
-
-    // // 客户端配置
-	
-	// const clientOptions: LanguageClientOptions = {
-    //     documentSelector: [
-    //         { language: 'solidity', scheme: 'file' },
-    //         { language: 'solidity', scheme: 'untitled' },
-    //     ]
-    // };
-
-    // client = new LanguageClient(
-    //     'solidity',
-    //     'Solidity Language Server',
-    //     serverOptions,
-    //     clientOptions
-    // );
-
-    // // 启动客户端，同时启动语言服务器
-    // client.start();
 }
 
 async function recommend(curLen : number, currentSen : any, curContext : string) {
