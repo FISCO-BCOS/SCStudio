@@ -12,8 +12,8 @@ export class ItemProvider implements vscode.CompletionItemProvider{
 			codeItems = [];
 			for(var i in this.codeComs){
 				var simpleCode = new vscode.CompletionItem(this.codeComs[i]);
-				simpleCode.kind = vscode.CompletionItemKind.Snippet;
-				// simpleCode.sortText = i;
+				simpleCode.kind = vscode.CompletionItemKind.Function;
+				simpleCode.sortText = i;
 				codeItems = codeItems.concat(simpleCode);
 			}
 			return codeItems;

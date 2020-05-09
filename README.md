@@ -1,65 +1,49 @@
-# secsolidity README
+# Secsolidity README
 
-This is the README for your extension "secsolidity". After writing up a brief description, we recommend including the following sections.
+Secsolidity is a vscode extension for writing solidity contracts in a safe way. 
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+For now, Secsolidity provides such features:
 
-For example if there is an image subfolder under your extension project workspace:
+**a) Smart contract security check**
 
-\!\[feature X\]\(images/feature-x.png\)
+Secsoldity use a ensemble analysis tool to check whether there is a vulnerability in the current smart contract. At present, Secsolidity supports 56 kinds of common vulnerabilities such as 'Reentrancy', 'Overflow', 'TimeStamp Dependency' and 'Contract Backdoors'.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+In order to use this function, the developer can use the following command:
+```
+SecSolidity: Analyze Contract
+```
+For now, the time limit for each contract is set as 60 seconds.
 
-## Requirements
+![Feature_Security_Check](img\secsolidity-analyze.gif)
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+**b) Next token suggestion**
 
-## Extension Settings
+Secsolidity provides a suggestion for the next token. This is useful for a solidity beginner.
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+In order to use this function, the developer can click 'space' when he has finished typing the current token and use the following command:
+```
+Trigger Suggestion
+```
+![Feature_Security_Check](img\secsolidity-token.gif)
 
-For example:
+**c) API completion**
+Secsolidity supports api completion for common structs in solidity language such as `msg` and `block`.
 
-This extension contributes the following settings:
+**d) Highlight**
+Secsolidity implements a highlight feature for solidity language.
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
 
-## Known Issues
+## Usage
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+The current version of Secsolidity is still under development. You can only use it by cloning the repository and run the extension in debugging mode. You can use this tool by the followint commands:
+```
+git clone https://github.com/fCorleone/SecSolidity.git
+cd SecSolidity
+npm install
+code .
+```
+After opening the repository in VScode, press F5 to debug and open your workspace which contains the solidity files.
 
 **Enjoy!**
