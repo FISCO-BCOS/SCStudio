@@ -13,7 +13,7 @@ export class ItemProvider implements vscode.CompletionItemProvider{
 			for(var i in this.codeComs){
 				var simpleCode = new vscode.CompletionItem(this.codeComs[i]);
 				simpleCode.kind = vscode.CompletionItemKind.Function;
-				simpleCode.sortText = i;
+				// simpleCode.sortText = i;
 				codeItems = codeItems.concat(simpleCode);
 			}
 			return codeItems;

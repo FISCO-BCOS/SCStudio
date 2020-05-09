@@ -16,7 +16,7 @@ SecSolidity: Analyze Contract
 ```
 For now, the time limit for each contract is set as 60 seconds.
 
-![Feature_Security_Check](https://github.com/fCorleone/SecSolidity/blob/master/img/secsolidity_analyze.gif)
+![Feature_Security_Check](img/secsolidity_analyze.gif)
 
 **b) Next token suggestion**
 

@@ -100,7 +100,7 @@ export function activate(context: vscode.ExtensionContext) {
 						for(var i in res){
 							codes = codes.concat(res[i])
 						}
-						codes = ['isOwner','returns','public','auth','{']
+						// codes = ['isOwner','returns','public','auth','{']
 						// let demoProvider1 = new ItemProvider(codes,[]);
 						// context.subscriptions.pop();
 						demoProvider.codeComs = codes;
