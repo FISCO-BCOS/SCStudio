@@ -1,6 +1,6 @@
 {
 	"name": "secsolidity",
-	"displayName": "SecSolidity",
+	"displayName": "SCStudio",
 	"description": "",
 	"version": "0.0.1",
 	"engines": {
@@ -17,15 +17,15 @@
 		"commands": [
 			{
 				"command": "smartide.analyzecontract",
-				"title": "SecSolidity: Analyze Contract"
+				"title": "SCStudio: Analyze Contract"
 			},
 			{
 				"command": "smartide.disablerecommand",
-				"title": "SecSolidity: Disable Recommand "
+				"title": "SCStudio: Disable Recommand "
 			},
 			{
 				"command": "smartide.enablerecommand",
-				"title": "SecSolidity: Enable Recommand: "
+				"title": "SCStudio: Enable Recommand: "
 			}
 		],
 		"languages": [
@@ -82,6 +82,7 @@
 		"@types/superagent": "^4.1.7",
 		"colors.ts": "^1.0.20",
 		"log4js": "^6.2.1",
-		"superagent": "^5.2.2"
+		"superagent": "^5.2.2",
+		"urllib-sync": "^1.1.4"
 	}
 }

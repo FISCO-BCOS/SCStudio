@@ -41,7 +41,7 @@ export async function getRequest(url: string) {
                 if (!err) {
                     resolve(res);
                 } else {
-                    console.log(err)
+                    console.log(err);
                     reject(err);
                 }
             });
