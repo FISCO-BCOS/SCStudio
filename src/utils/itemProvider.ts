@@ -32,12 +32,16 @@ export class ItemProvider implements vscode.CompletionItemProvider{
 	}
 	
     public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.CompletionItem[]{	
-		console.log("token:", token);
-		if (context.triggerCharacter === ' ') {  // token suggestion
+
+		if (context.triggerCharacter === ' ' || context.triggerCharacter === '\n') {  // token suggestion
 			var previous = document.getText(new vscode.Range(new vscode.Position(0,0), position));
-			// console.log(previous, "**");
-			var cnt = 1;
-			var jsonObj = {"context":(previous)};
+			var sentence = document.lineAt(position).text;
+			var curLine = position.line;
+			// console.log("Context:", previous);
+			// console.log("Sentence:", sentence);
+			// console.log("CurLine:", curLine);
+
+			var jsonObj = {"sentence":(sentence), "context":(previous), "curLine":(curLine)};
 			var strjson = JSON.stringify(jsonObj);
 
 			const senUrl = "http://49.235.239.68:9065/tokenPredict";
@@ -45,11 +49,15 @@ export class ItemProvider implements vscode.CompletionItemProvider{
 
 			var CList = new Array();
 			var arr = res.data.results;
-			for(var it of arr) {
-				var temp = new vscode.CompletionItem(it, vscode.CompletionItemKind.Field);
-				temp.sortText = cnt.toString();
+
+			// display candidates in probablidity order
+			for(var i in arr) {
+				var temp = new vscode.CompletionItem(arr[i], vscode.CompletionItemKind.Field);
+				if (i.length === 1) 
+					temp.sortText = '0' + i;
+				else 
+					temp.sortText = i;
 				CList.push(temp);
-				cnt += 1;
 			}
 
 			// superagent.post(senUrl)
@@ -68,7 +76,7 @@ export class ItemProvider implements vscode.CompletionItemProvider{
 			// 			console.log('err:' + err);
 			// 		}
 			// 	});
-			this.codeComs = CList;
+			// this.codeComs = CList;
 			return CList;
 		}
 		else if (context.triggerCharacter === '.') {  // API completion
