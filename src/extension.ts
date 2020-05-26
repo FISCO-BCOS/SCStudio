@@ -44,7 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disprovideStatement);
 
 	let demoProvider = new ItemProvider([],[]);
-	let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider, '.', ' ');  
+	let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider, '.', ' ', '\n');  
 	context.subscriptions.push(solPv);
 
 
