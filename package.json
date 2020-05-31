@@ -50,7 +50,7 @@
 		],
 		"configurationDefaults": {
 			"[solidity]": {
-				"editor.wordBasedSuggestions": false
+				"editor.wordBasedSuggestions": true
 			}
 		}
 	},
