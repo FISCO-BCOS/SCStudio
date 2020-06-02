@@ -55,6 +55,11 @@ export function activate(context: vscode.ExtensionContext) {
 			// demoProvider.Items = [];
 			// demoProvider.codeComs = [];
 
+	if(recommendEnabled) {
+		vscode.workspace.onDidChangeTextDocument(async function(event) {
+			// demoProvider.Items = [];
+			// demoProvider.codeComs = [];
+
 			if(event.contentChanges[0]) {
 				var s = event.contentChanges[0].text;
 
