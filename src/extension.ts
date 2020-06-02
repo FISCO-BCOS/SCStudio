@@ -48,12 +48,6 @@ export function activate(context: vscode.ExtensionContext) {
 	let demoProvider = new ItemProvider([],[]);
 	let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider, '.', ' ', '\n');  
 	context.subscriptions.push(solPv);
-	
-
-	if(recommendEnabled) {
-		vscode.workspace.onDidChangeTextDocument(async function(event) {
-			// demoProvider.Items = [];
-			// demoProvider.codeComs = [];
 
 	if(recommendEnabled) {
 		vscode.workspace.onDidChangeTextDocument(async function(event) {
