@@ -20,9 +20,9 @@ export async function analyzeContract(
             async () => {
                 try { 
                     await vscode!.extensions!.getExtension('philhindle.errorlens')!.activate().then(
-                        // async () => {
-                        //     vscode.commands.executeCommand('ErrorLens.enable')
-                        // }
+                        async () => {
+                            vscode.commands.executeCommand('ErrorLens.enable')
+                        }
                         
                     )
                     diagnosticCollection.clear()

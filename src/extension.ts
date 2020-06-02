@@ -25,6 +25,8 @@ export function activate(context: vscode.ExtensionContext) {
 	let solidityExt = vscode!.extensions!.getExtension('JuanBlanco.solidity')!;
 	solidityExt.activate();
 
+	vscode.commands.executeCommand('ErrorLens.disable');
+
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
@@ -55,10 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
 			// demoProvider.Items = [];
 			// demoProvider.codeComs = [];
 
-	if(recommendEnabled) {
-		vscode.workspace.onDidChangeTextDocument(async function(event) {
-			// demoProvider.Items = [];
-			// demoProvider.codeComs = [];
+			vscode.commands.executeCommand('ErrorLens.disable');
 
 			if(event.contentChanges[0]) {
 				var s = event.contentChanges[0].text;
