@@ -27,7 +27,7 @@ export async function analyzeContract(
                     )
                     diagnosticCollection.clear()
                     const projectConfiguration: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(
-                        'smartidevsc',
+                        'scstudiovsc',
                     )
                     // console.log(vscode.languages.getDiagnostics())
                     // vscode.
@@ -83,16 +83,16 @@ export async function analyzeContract(
                                            
                     if (!respBody) {
                         vscode.window.showInformationMessage(
-                            `SmartIDE: No security issues found in your contract.`,
+                            `SCStudio: No security issues found in your contract.`,
                         )
                     } else {
                         vscode.window.showWarningMessage(
-                            `SmartIDE: found some security issues with your contract. Please check the file vulnerabilities.txt for detail`,
+                            `SCStudio: found some security issues with your contract. Please check the file vulnerabilities.txt for detail`,
                         )
                     }
                 
             } catch (err) {
-                vscode.window.showErrorMessage(`SmartIDE: ${err}`)
+                vscode.window.showErrorMessage(`SCStudio: ${err}`)
             }
             }, 
         )

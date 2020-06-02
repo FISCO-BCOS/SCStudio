@@ -80,7 +80,7 @@ export class ItemProvider implements vscode.CompletionItemProvider{
 			return CList;
 		}
 		else if (context.triggerCharacter === '.') {  // API completion
-			console.log("Items *", (this.Items).length, this.Items);
+			// console.log("Items *", (this.Items).length, this.Items);
 			return this.Items;
 		}
 		else {  // current word completion

@@ -15,26 +15,28 @@ let diagnosticsCollection: vscode.DiagnosticCollection;
 export function activate(context: vscode.ExtensionContext) {
 	let recommendEnabled: boolean = true;
 	ext.context = context;
-	ext.outputChannel = vscode.window.createOutputChannel("SmartIDE");
+	ext.outputChannel = vscode.window.createOutputChannel("SCStudio");
 
-	diagnosticsCollection = vscode.languages.createDiagnosticCollection('smartide');
+	diagnosticsCollection = vscode.languages.createDiagnosticCollection('scstudio');
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "secsolidity" is now active!');
+	console.log('Congratulations, your extension "SCStudio" is now active!');
+	let solidityExt = vscode!.extensions!.getExtension('JuanBlanco.solidity')!;
+	solidityExt.activate();
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let analyzeSub = vscode.commands.registerCommand('smartide.analyzecontract', async () => {
+	let analyzeSub = vscode.commands.registerCommand('scstudio.analyzecontract', async () => {
 		// vscode.window.showInformationMessage('Hello World!');
 		analyzeContract(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document);
 	});
  
-	let disprovideStatement = vscode.commands.registerCommand('smartide.disablerecommand', () => {
+	let disprovideStatement = vscode.commands.registerCommand('scstudio.disablerecommand', () => {
 		recommendEnabled = false;
 	}); 
-	let provideStatement = vscode.commands.registerCommand('smartide.enablerecommand', () => {
+	let provideStatement = vscode.commands.registerCommand('scstudio.enablerecommand', () => {
 		recommendEnabled = true;
 	}); 
 
@@ -46,7 +48,12 @@ export function activate(context: vscode.ExtensionContext) {
 	let demoProvider = new ItemProvider([],[]);
 	let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider, '.', ' ', '\n');  
 	context.subscriptions.push(solPv);
+	
 
+	if(recommendEnabled) {
+		vscode.workspace.onDidChangeTextDocument(async function(event) {
+			// demoProvider.Items = [];
+			// demoProvider.codeComs = [];
 
 	if(recommendEnabled) {
 		vscode.workspace.onDidChangeTextDocument(async function(event) {
@@ -57,43 +64,45 @@ export function activate(context: vscode.ExtensionContext) {
 				var s = event.contentChanges[0].text;
 
 				/* Token Suggestion */
-				if(s === ' '){
+				if(s === ' ') {
 					// vscode.Range.arguments
-					console.log('we found the space');
+					console.log('Space trigger.');
 				}
 				
 				/* API Completion */
 				else if(s === '.') {
 					// vscode.Range.arguments
-					console.log('we found the dot');
-					if(event.contentChanges[0].range){
-						let range = event.contentChanges[0].range;
-						let str_range = JSON.stringify(range);
-						let json_range = JSON.parse(str_range);
-						let currentLine = json_range[0].line + 1;
-						let currentSen = vscode.window.activeTextEditor?.document.lineAt(currentLine - 1).text;
-						let codes : string[];
-						codes = [];
-						let start = 0;
-						if (currentSen) {
-							for(let i = 0;;i++) {
-								if(currentSen[i] === '.') {
-									start = i;
-									break;
+					console.log('Dot trigger.');
+					if(event.contentChanges[0].range) {
+						if (demoProvider.Items === []) {
+							let range = event.contentChanges[0].range;
+							let str_range = JSON.stringify(range);
+							let json_range = JSON.parse(str_range);
+							let currentLine = json_range[0].line + 1;
+							let currentSen = vscode.window.activeTextEditor?.document.lineAt(currentLine - 1).text;
+							let codes : string[];
+							codes = [];
+							let start = 0;
+							if (currentSen) {
+								for(let i = 0;;i++) {
+									if(currentSen[i] === '.') {
+										start = i;
+										break;
+									}
 								}
+								const globalVariableContext = GetContextualAutoCompleteByGlobalVariable(currentSen, start);
+								// let NormalProvider = new ItemProvider([],globalVariableContext);
+								// context.subscriptions.pop()
+								// let solnorPv = vscode.languages.registerCompletionItemProvider("solidity", NormalProvider,'.');  
+								// context.subscriptions.push(solnorPv);
+
+								// let demoProvider = new ItemProvider([],[]);
+								// let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider,'.');  
+								// context.subscriptions.push(solPv);
+
+								demoProvider.Items = globalVariableContext;
+								demoProvider.codeComs = [];
 							}
-							const globalVariableContext = GetContextualAutoCompleteByGlobalVariable(currentSen, start);
-							// let NormalProvider = new ItemProvider([],globalVariableContext);
-							// context.subscriptions.pop()
-							// let solnorPv = vscode.languages.registerCompletionItemProvider("solidity", NormalProvider,'.');  
-							// context.subscriptions.push(solnorPv);
-
-							// let demoProvider = new ItemProvider([],[]);
-							// let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider,'.');  
-							// context.subscriptions.push(solPv);
-
-							demoProvider.Items = globalVariableContext;
-							demoProvider.codeComs = [];
 						}
 					}
 				}

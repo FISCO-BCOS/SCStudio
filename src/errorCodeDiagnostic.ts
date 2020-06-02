@@ -29,7 +29,7 @@ export function errorCodeDiagnostic(document: vscode.TextDocument, collection: v
 								position.start.column = locations[0].column;
 								position.end.line = locations[1].line - 1;
 								position.end.column = locations[1].column;
-								let message = `MythX ${issue.swcID}. ${issue.description.head}`;
+								let message = `SCStudio ${issue.swcID}. ${issue.description.head}`;
 								let range = new vscode.Range(new vscode.Position(position.start.line, position.start.column), new vscode.Position(position.end.line, position.end.column))
 								let severity = issue.severity.toLowerCase() === "warning" ? vscode.DiagnosticSeverity.Warning : vscode.DiagnosticSeverity.Error;
 								let relatedInformation = ''
