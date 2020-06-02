@@ -4,21 +4,21 @@ const path = require('path');
 
 export async function getContractName(fileUri: vscode.Uri): Promise<string>  {
 	try {
-        let outputAST
+        let outputAST;
         // let contractName
 		let fixedPath = fileUri.fsPath;
 		const rootPath = vscode.workspace!.workspaceFolders![0].uri.fsPath;
 
 		// Windows OS hack
 		if(os.platform() === 'win32') {
-			fixedPath = fixedPath.replace(/\\/g, '/') 
+			fixedPath = fixedPath.replace(/\\/g, '/');
 			if (fixedPath.charAt(0) === '/') {
 				fixedPath = fixedPath.substr(1);
 			}
 		}
 		
 		const fileName = fixedPath.split("/").pop();
-		const fileNameTrimmed = fileName!.replace('.sol', '')
+		const fileNameTrimmed = fileName!.replace('.sol', '');
 
 
 		const pathNoFileName = fixedPath.substring(0, fixedPath.lastIndexOf("/"));
@@ -26,17 +26,20 @@ export async function getContractName(fileUri: vscode.Uri): Promise<string>  {
 		// Find differences between two path
 		const relativePath = path.relative(rootPath, pathNoFileName);
 
+		// Auto compile current contract
+		vscode.commands.executeCommand('solidity.compile.active');
+
 		if (pathNoFileName === rootPath) {
             outputAST = path.join(rootPath, 'bin', `${fileNameTrimmed}-solc-output.json`);
         } else {
             outputAST =  path.join(rootPath, 'bin', relativePath, `${fileNameTrimmed}-solc-output.json`);
         }
 
-		const documentObj = await vscode.workspace.openTextDocument(outputAST)
+		const documentObj = await vscode.workspace.openTextDocument(outputAST);
 		const compiled = JSON.parse(documentObj.getText());
 		
 
-        const contract = compiled.contracts[fixedPath]
+        const contract = compiled.contracts[fixedPath];
         const contracts = Object.keys(contract);
         let contractName = '';
 		
@@ -55,13 +58,13 @@ export async function getContractName(fileUri: vscode.Uri): Promise<string>  {
 					}
 					contractName = value;
 				}
-			)
+			);
 		}
 
         return contractName;
 
     } catch(err) {
-		vscode.window.showWarningMessage(`Mythx error with getting your contract name. ${err}`);
-		throw new Error(`Mythx error with getting your contract name. ${err}`)
+		// vscode.window.showWarningMessage(`SCStudio: ${err}`);
+		throw new Error(`SCStudio got error during compiling your contract. ${err}`);
 	}
 }
