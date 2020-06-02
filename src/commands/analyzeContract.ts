@@ -13,11 +13,11 @@ export async function analyzeContract(
     fileUri: vscode.Uri,
     dc: vscode.TextDocument
 ): Promise<void> {
-    // await vscode!.extensions!
-    //     .getExtension('JuanBlanco.solidity')!
-    //     .activate()
-    //     .then(
-            // async () => {
+    await vscode!.extensions!
+        .getExtension('JuanBlanco.solidity')!
+        .activate()
+        .then(
+            async () => {
                 try { 
                     await vscode!.extensions!.getExtension('philhindle.errorlens')!.activate().then(
                         // async () => {
@@ -27,7 +27,7 @@ export async function analyzeContract(
                     )
                     diagnosticCollection.clear()
                     const projectConfiguration: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(
-                        'smartidevsc',
+                        'scstudiovsc',
                     )
                     // console.log(vscode.languages.getDiagnostics())
                     // vscode.
@@ -81,19 +81,19 @@ export async function analyzeContract(
                     updateDiagnostics(dc, diagnosticCollection, respBody);                     
                     if (!respBody) {
                         vscode.window.showInformationMessage(
-                            `SmartIDE: No security issues found in your contract.`,
+                            `SCStudio: No security issues found in your contract.`,
                         )
                     } else {
                         vscode.window.showWarningMessage(
-                            `SmartIDE: found some security issues with your contract. Please check the file vulnerabilities.txt for detail`,
+                            `SCStudio: found some security issues with your contract. Please check the file vulnerabilities.txt for detail`,
                         )
                     }
                 
             } catch (err) {
-                vscode.window.showErrorMessage(`SmartIDE: ${err}`)
+                vscode.window.showErrorMessage(`SCStudio: ${err}`)
             }
-            // }, 
-        // )
+            }, 
+        )
 }
 
 function updateDiagnostics(document: vscode.TextDocument | undefined, collection: vscode.DiagnosticCollection, obj:any): void {
@@ -108,7 +108,7 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
         for(var ent in json_res.vulnerabilities){
             // console.log(ent)
             if(json_res.vulnerabilities[ent]){
-                let message = `Name: `+json_res.vulnerabilities[ent].name 
+                let message = `Name: `+ json_res.vulnerabilities[ent].name 
                 // + `; Description: ` + json_res.vulnerabilities[ent].description;
                 let range = document.lineAt(json_res.vulnerabilities[ent].lineNo[0]-1).range;
                 
