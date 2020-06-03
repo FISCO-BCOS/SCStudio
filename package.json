@@ -20,6 +20,10 @@
 				"title": "SCStudio: Analyze Contract"
 			},
 			{
+				"command": "scstudio.analyzecontractbutcompile",
+				"title": "SCStudio: Analyze Contract Without Compilation"
+			},
+			{
 				"command": "scstudio.disablerecommand",
 				"title": "SCStudio: Disable Recommand"
 			},
