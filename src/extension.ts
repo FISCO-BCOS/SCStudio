@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import { ext } from "./extensionVariables";
 import {analyzeContract} from "./commands/analyzeContract";
+import {analyzeContractButCompile} from "./commands/analyzeContractButCompile";
 import {ItemProvider} from "./utils/itemProvider";
 import {getFileContent} from "./utils/getFileContent";
 import {postStringRequest} from "./utils/httpUtils";
@@ -31,8 +32,11 @@ export function activate(context: vscode.ExtensionContext) {
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
 	let analyzeSub = vscode.commands.registerCommand('scstudio.analyzecontract', async () => {
-		// vscode.window.showInformationMessage('Hello World!');
 		analyzeContract(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document);
+	});
+
+	let analyzeSubWithoutCompiler = vscode.commands.registerCommand('scstudio.analyzecontractbutcompile', async () => {
+		analyzeContractButCompile(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document);
 	});
  
 	let disprovideStatement = vscode.commands.registerCommand('scstudio.disablerecommand', () => {
@@ -44,6 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // context.subscriptions.push(solPv);
 	context.subscriptions.push(analyzeSub);
+	context.subscriptions.push(analyzeSubWithoutCompiler);
 	context.subscriptions.push(provideStatement);
 	context.subscriptions.push(disprovideStatement);
 

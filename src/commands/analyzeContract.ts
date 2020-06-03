@@ -21,11 +21,10 @@ export async function analyzeContract(
                 try { 
                     await vscode!.extensions!.getExtension('philhindle.errorlens')!.activate().then(
                         async () => {
-                            vscode.commands.executeCommand('ErrorLens.enable')
-                        }
-                        
-                    )
-                    diagnosticCollection.clear()
+                            vscode.commands.executeCommand('ErrorLens.enable');
+                        }              
+                    );
+                    diagnosticCollection.clear();
                     const projectConfiguration: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(
                         'scstudiovsc',
                     )
@@ -72,9 +71,9 @@ export async function analyzeContract(
                             return
                         })
 
-                    diagnosticCollection.clear()
+                    diagnosticCollection.clear();
                     // console.log(fileUri)
-                    const uri = '49.235.239.68:9090/contract'                      
+                    const uri = '49.235.239.68:9090/contract';
                     let curname = contractName + Date.parse(new Date().toString());
                     // set two minutes as a limit duration of testing
                     const respBody = await postRequest(uri,{name:curname,contractcode:fileContent,limit:60});
@@ -82,18 +81,18 @@ export async function analyzeContract(
                     if (!respBody) {
                         vscode.window.showInformationMessage(
                             `SCStudio: No security issues found in your contract.`,
-                        )
+                        );
                     } else {
                         vscode.window.showWarningMessage(
                             `SCStudio: found some security issues with your contract. Please check the file vulnerabilities.txt for detail`,
-                        )
+                        );
                     }
                 
             } catch (err) {
-                vscode.window.showErrorMessage(`SCStudio: ${err}`)
+                vscode.window.showErrorMessage(`SCStudio: ${err}`);
             }
-            }, 
-        )
+        }, 
+    );
 }
 
 function updateDiagnostics(document: vscode.TextDocument | undefined, collection: vscode.DiagnosticCollection, obj:any): void {
@@ -102,21 +101,22 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
 	if (document) {
         // console.log(document.uri)
         vscode.languages.getDiagnostics(document.uri).slice(1,1);
-        obj = JSON.parse(JSON.stringify(obj.text))
-        let json_res = JSON.parse(obj)
-        console.log(json_res)
-        for(var ent in json_res.vulnerabilities){
+        obj = JSON.parse(JSON.stringify(obj.text));
+        let json_res = JSON.parse(obj);
+        console.log(json_res);
+        for(var ent in json_res.vulnerabilities) {
             // console.log(ent)
-            if(json_res.vulnerabilities[ent]){
-                let message = `Name: `+ json_res.vulnerabilities[ent].name 
+            if(json_res.vulnerabilities[ent]) {
+                let message = `Type: `+ json_res.vulnerabilities[ent].name; 
                 // + `; Description: ` + json_res.vulnerabilities[ent].description;
                 let range = document.lineAt(json_res.vulnerabilities[ent].lineNo[0]-1).range;
                 
                 let severity : any;
-                if(json_res.vulnerabilities[ent].swcId == 0){
+                severity = json_res.vulnerabilities[ent].level;
+                if (severity === 'error') {
                     severity = vscode.DiagnosticSeverity.Warning;
                 }
-                else{
+                else {
                     severity = vscode.DiagnosticSeverity.Error;
                 }
                 // severity = vscode.DiagnosticSeverity.Error;
@@ -125,7 +125,8 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
                 diagnostics.push(diagnostic);
             }
         }
-        collection.set(document.uri, diagnostics)
+        console.log("Security Analyze With Complier Finish.");
+        collection.set(document.uri, diagnostics);
 	} else {
 		collection.clear();
 	}

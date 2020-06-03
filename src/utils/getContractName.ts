@@ -20,7 +20,6 @@ export async function getContractName(fileUri: vscode.Uri): Promise<string>  {
 		const fileName = fixedPath.split("/").pop();
 		const fileNameTrimmed = fileName!.replace('.sol', '');
 
-
 		const pathNoFileName = fixedPath.substring(0, fixedPath.lastIndexOf("/"));
 
 		// Find differences between two path
