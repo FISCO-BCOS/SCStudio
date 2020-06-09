@@ -61,6 +61,21 @@ export async function analyzeContract(
                         '/',
                     )
                     rootDirectory = rootDirectory[rootDirectory.length - 1]
+                    
+                    // Input Time
+                    let inputOptions : vscode.InputBoxOptions =
+                    {
+                        prompt:"Please input the time",
+                        placeHolder: "Input an integer"
+                    };
+                    let inputTime = 0;
+                    await vscode.window.showInputBox(inputOptions).then(value =>{
+                        if(!value)
+                            return;
+                        else
+                            inputTime = Number(value);
+                    });
+
 
                     vscode.window
                         .showInformationMessage(
@@ -76,7 +91,7 @@ export async function analyzeContract(
                     const uri = '49.235.239.68:9090/contract';
                     let curname = contractName + Date.parse(new Date().toString());
                     // set two minutes as a limit duration of testing
-                    const respBody = await postRequest(uri,{name:curname,contractcode:fileContent,limit:60});
+                    const respBody = await postRequest(uri,{name:curname,contractcode:fileContent,limit:inputTime});
                     updateDiagnostics(dc, diagnosticCollection, respBody);                     
                     if (!respBody) {
                         vscode.window.showInformationMessage(
