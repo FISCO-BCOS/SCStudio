@@ -65,10 +65,11 @@ export async function analyzeContract(
                     // Input Time
                     let inputOptions : vscode.InputBoxOptions =
                     {
-                        prompt:"Please input the time",
-                        placeHolder: "Input an integer"
+                        prompt:"Please input the maximum time for analysis.",
+                        placeHolder: "Input an integer (Default value is 60)"
                     };
-                    let inputTime = 0;
+                    let inputTime = 60;
+
                     await vscode.window.showInputBox(inputOptions).then(value =>{
                         if(!value)
                             return;
