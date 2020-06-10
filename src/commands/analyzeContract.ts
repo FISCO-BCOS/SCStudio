@@ -69,6 +69,7 @@ export async function analyzeContract(
                         placeHolder: "Input an integer (Default value is 60)"
                     };
                     let inputTime = 60;
+
                     await vscode.window.showInputBox(inputOptions).then(value =>{
                         if(!value)
                             return;
