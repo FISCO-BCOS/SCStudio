@@ -93,7 +93,7 @@ export async function analyzeContract(
                     let curname = contractName + Date.parse(new Date().toString());
                     // set two minutes as a limit duration of testing
                     const respBody = await postRequest(uri,{name:curname,contractcode:fileContent,limit:inputTime});
-                    updateDiagnostics(dc, diagnosticCollection, respBody,fileUri);                     
+                    updateDiagnostics(dc, diagnosticCollection, respBody, fileUri);                     
                     if (!respBody) {
                         vscode.window.showInformationMessage(
                             `SCStudio: No security issues found in your contract.`,
@@ -121,7 +121,7 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
             FILEPATH = FILEPATH.substr(1)
         }
     }
-    console.log('FILEPATH  '+FILEPATH)
+    // console.log('FILEPATH  '+FILEPATH)
     FILEPATH = FILEPATH.substring(0,FILEPATH.lastIndexOf('/'))+'/vulnerabilitiesInfo.txt'
     if (document) {
         // console.log(document.uri)
@@ -140,8 +140,8 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
                     `Advice:` + json_res.vulnerabilities[ent].advice + '\n' +
                     `Line:` + json_res.vulnerabilities[ent].lineNo[0] + '\n' +
                     `Level:` + json_res.vulnerabilities[ent].level + '\n' + '\n';
-                console.log(details)
-                console.log(FILEPATH)
+                // console.log(details)
+                // console.log(FILEPATH)
                 fs.appendFile(FILEPATH, details, function (err) {
                     if (err)
                         throw err;
@@ -169,5 +169,3 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
 		collection.clear();
 	}
 }
-
-
