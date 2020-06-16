@@ -88,7 +88,7 @@ export async function analyzeContract(
                         })
 
                     diagnosticCollection.clear();
-                    // console.log(fileUri)
+                    console.log(fileUri)
                     const uri = '49.235.239.68:9090/contract';
                     let curname = contractName + Date.parse(new Date().toString());
                     // set two minutes as a limit duration of testing
