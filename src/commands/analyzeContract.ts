@@ -69,6 +69,7 @@ export async function analyzeContract(
                         placeHolder: "Input an integer (Default value is 60)"
                     };
                     let inputTime = 60;
+
                     await vscode.window.showInputBox(inputOptions).then(value =>{
                         if(!value)
                             return;
@@ -92,7 +93,7 @@ export async function analyzeContract(
                     let curname = contractName + Date.parse(new Date().toString());
                     // set two minutes as a limit duration of testing
                     const respBody = await postRequest(uri,{name:curname,contractcode:fileContent,limit:inputTime});
-                    updateDiagnostics(dc, diagnosticCollection, respBody);                     
+                    updateDiagnostics(dc, diagnosticCollection, respBody, fileUri);                     
                     if (!respBody) {
                         vscode.window.showInformationMessage(
                             `SCStudio: No security issues found in your contract.`,
@@ -110,10 +111,19 @@ export async function analyzeContract(
     );
 }
 
-function updateDiagnostics(document: vscode.TextDocument | undefined, collection: vscode.DiagnosticCollection, obj:any): void {
+function updateDiagnostics(document: vscode.TextDocument | undefined, collection: vscode.DiagnosticCollection, obj:any, fileUri:any): void {
     let diagnostics: vscode.Diagnostic[] = [];
+    let FILEPATH = fileUri.fsPath;
     
-	if (document) {
+    if (os.platform() === 'win32') {
+        FILEPATH = FILEPATH.replace(/\\/g, '/')
+        if (FILEPATH.charAt(0) === '/') {
+            FILEPATH = FILEPATH.substr(1)
+        }
+    }
+    // console.log('FILEPATH  '+FILEPATH)
+    FILEPATH = FILEPATH.substring(0,FILEPATH.lastIndexOf('/'))+'/vulnerabilitiesInfo.txt'
+    if (document) {
         // console.log(document.uri)
         vscode.languages.getDiagnostics(document.uri).slice(1,1);
         obj = JSON.parse(JSON.stringify(obj.text));
@@ -122,8 +132,21 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
         for(var ent in json_res.vulnerabilities) {
             // console.log(ent)
             if(json_res.vulnerabilities[ent]) {
-                let message = `Type: `+ json_res.vulnerabilities[ent].name; 
-                // + `; Description: ` + json_res.vulnerabilities[ent].description;
+                let message = `Name: ` + json_res.vulnerabilities[ent].name;
+                // write the detail information into the file
+                let details = `Name:` + json_res.vulnerabilities[ent].name + '\n' +
+                    `Description:` + json_res.vulnerabilities[ent].description + '\n' +
+                    `SwcID:` + json_res.vulnerabilities[ent].swcId + '\n' +
+                    `Advice:` + json_res.vulnerabilities[ent].advice + '\n' +
+                    `Line:` + json_res.vulnerabilities[ent].lineNo[0] + '\n' +
+                    `Level:` + json_res.vulnerabilities[ent].level + '\n' + '\n';
+                // console.log(details)
+                // console.log(FILEPATH)
+                fs.appendFile(FILEPATH, details, function (err) {
+                    if (err)
+                        throw err;
+                });
+
                 let range = document.lineAt(json_res.vulnerabilities[ent].lineNo[0]-1).range;
                 
                 let severity : any;
@@ -146,5 +169,3 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
 		collection.clear();
 	}
 }
-
-
