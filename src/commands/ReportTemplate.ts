@@ -1,5 +1,5 @@
 export var detailItem=
-`<h2><a name="vulnerability-name" class="md-header-anchor"></a><span>Vulnerability: </span><code>!NAME!</code></h2><figure><table><thead><tr><th><span>Line</span></th><th><span>Level</span></th><th><span>SwcID</span></th></tr></thead><tbody><tr><td><span>!LINE!</span></td><td><span>!LEVEL!</span></td><td><span>!SWCID!</span></td></tr></tbody></table></figure><h3><a name="description" class="md-header-anchor"></a><span>Description</span></h3><p><span>!DESCRIPTION!</span></p><h3><a name="advice" class="md-header-anchor"></a><span>Advice</span></h3><p><span>!ADVICE!</span></p><h3><a name="source-code" class="md-header-anchor"></a><span>Source Code</span></h3><p><code>SOURCECODE</code></p>`;
+`<h2><span>Vulnerability: </span><code>!NAME!</code></h2><figure><table><thead><tr><th><span>Line</span></th><th><span>Level</span></th><th><span>SwcID</span></th></tr></thead><tbody><tr><td><span>!LINE!</span></td><td><span>!LEVEL!</span></td><td><span>!SWCID!</span></td></tr></tbody></table></figure><h3><span>Description</span></h3><p><span>!DESCRIPTION!</span></p><h3><span>Advice</span></h3><p><span>!ADVICE!</span></p><h3><span>Source Code</span></h3><p><code>SOURCECODE</code></p>`;
 export var detailPrefix=
 `<!doctype html>
 <html>
@@ -1979,7 +1979,7 @@ footer {
 </style>
 </head>
 <body class='typora-export' >
-<div  id='write'  class = 'is-mac'><blockquote><p><span>Powered by SCStudio, a unified smart contract development platform produced by Tsinghua University & WeBank. </span></p></blockquote><h1><a name="overview" class="md-header-anchor"></a><span>Overview</span></h1><figure><table><thead><tr><th><span>Vulnerabilities</span></th><th><span>Line</span></th><th><span>Level</span></th></tr></thead>`;
+<div  id='write'  class = 'is-mac'><blockquote><p><span>Powered by SCStudio, a unified smart contract development platform produced by Tsinghua University & WeBank. </span></p></blockquote><h1><span>Overview</span></h1><figure><table><thead><tr><th><span>Vulnerabilities</span></th><th><span>Line</span></th><th><span>Level</span></th></tr></thead>`;
 export var tableSuffix=
 `</table></figure><p>&nbsp;</p></div>
 </body>
