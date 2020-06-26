@@ -1,5 +1,5 @@
 export var detailItem=
-`<h2><span>Vulnerability: </span><code>!NAME!</code></h2><figure><table><thead><tr><th><span>Line</span></th><th><span>Level</span></th><th><span>SwcID</span></th></tr></thead><tbody><tr><td><span>!LINE!</span></td><td><span>!LEVEL!</span></td><td><span>!SWCID!</span></td></tr></tbody></table></figure><h3><span>Source Code</span></h3><p><code>SOURCECODE</code></p>`;
+`<h2><span>Vulnerability: </span><code>!NAME!</code></h2><figure><table><thead><tr><th><span>Line</span></th><th><span>Level</span></th><th><span>SwcID</span></th></tr></thead><tbody><tr><td><span>!LINE!</span></td><td><span>!LEVEL!</span></td><td><span>!SWCID!</span></td></tr></tbody></table></figure><h3><span>Description</span></h3><p><span>!DESCRIPTION!</span></p><h3><span>Advice</span></h3><p><span>!ADVICE!</span></p><h3><span>Source Code</span></h3><p><code>SOURCECODE</code></p>`;
 export var detailPrefix=
 `<!doctype html>
 <html>
