@@ -2,7 +2,8 @@ import * as vscode from 'vscode'
 import { getFileContent } from '../utils/getFileContent'
 import { getRequest, postRequest } from '../utils/httpUtils'
 import { getContractName } from '../utils/getContractName'
-import fs = require('fs')
+import fs = require('fs');
+import { detailItem, detailPrefix, detailSuffix, tablePrefix, tableSuffix, tableItem } from './ReportTemplate';
 
 
 const os = require('os')
@@ -35,7 +36,7 @@ export async function analyzeContractButCompile(
         // )
 
         let FILEPATH = fileUri.fsPath;
-        var indexStart = FILEPATH.lastIndexOf('\\');
+        var indexStart = Math.max(FILEPATH.lastIndexOf('\\'), FILEPATH.lastIndexOf('/'));
         var indexEnd = FILEPATH.lastIndexOf('.');
         var strLen = (indexEnd - indexStart) - 1;
         const contractName = FILEPATH.substr(indexStart + 1, strLen);
@@ -69,7 +70,6 @@ export async function analyzeContractButCompile(
              placeHolder: "Input an integer (Default value is 60)"
          };
          let inputTime = 60;
-
          await vscode.window.showInputBox(inputOptions).then(value =>{
              if(!value)
                  return;
@@ -121,13 +121,20 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
         }
     }
     // console.log('FILEPATH  '+FILEPATH)
-    FILEPATH = FILEPATH.substring(0,FILEPATH.lastIndexOf('/'))+'/vulnerabilitiesInfo.txt'
+    let htmlPath = FILEPATH;
+    FILEPATH = FILEPATH.substring(0,FILEPATH.lastIndexOf('/'))+'/vulnerabilitiesInfo.txt';
+    htmlPath = htmlPath.substring(0,FILEPATH.lastIndexOf('/'))+'/vulnerabilitiesReport.html';
     if (document) {
         // console.log(document.uri)
         vscode.languages.getDiagnostics(document.uri).slice(1,1);
         obj = JSON.parse(JSON.stringify(obj.text));
         let json_res = JSON.parse(obj);
         console.log(json_res);
+        
+        // the HTML page
+        let detailHtml = detailPrefix;
+        let tableHtml = tablePrefix;
+
         for(var ent in json_res.vulnerabilities) {
             // console.log(ent)
             if(json_res.vulnerabilities[ent]) {
@@ -139,6 +146,23 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
                     `Advice:` + json_res.vulnerabilities[ent].advice + '\n' +
                     `Line:` + json_res.vulnerabilities[ent].lineNo[0] + '\n' +
                     `Level:` + json_res.vulnerabilities[ent].level + '\n' + '\n';
+
+                // Generate the detail html sector of the current vulnerability
+                let curDetail=detailItem.replace(/!NAME!/, json_res.vulnerabilities[ent].name);
+                curDetail = curDetail.replace(/!DESCRIPTION!/, json_res.vulnerabilities[ent].description);
+                curDetail = curDetail.replace(/!SWCID!/, json_res.vulnerabilities[ent].swcId);
+                curDetail = curDetail.replace(/!ADVICE!/, json_res.vulnerabilities[ent].advice);
+                curDetail = curDetail.replace(/!LINE!/, json_res.vulnerabilities[ent].lineNo[0]);
+                curDetail = curDetail.replace(/!LEVEL!/, json_res.vulnerabilities[ent].level);
+                curDetail = curDetail.replace(/SOURCECODE/, document.lineAt(json_res.vulnerabilities[ent].lineNo[0]-1).text);
+                detailHtml = detailHtml + curDetail;
+
+                // Generate the table html sector of the current vulnerability
+                let tableItemHtml = tableItem.replace(/!NAME!/, json_res.vulnerabilities[ent].name);
+                tableItemHtml = tableItemHtml.replace(/!LINE!/, json_res.vulnerabilities[ent].lineNo[0]);
+                tableItemHtml = tableItemHtml.replace(/!LEVEL!/, json_res.vulnerabilities[ent].level);
+                tableHtml = tableHtml+tableItemHtml;
+
                 // console.log(details)
                 // console.log(FILEPATH)
                 fs.appendFile(FILEPATH, details, function (err) {
@@ -146,8 +170,8 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
                         throw err;
                 });
 
-                let range = document.lineAt(json_res.vulnerabilities[ent].lineNo[0]-1).range;
                 
+                let range = document.lineAt(json_res.vulnerabilities[ent].lineNo[0]-1).range;
                 let severity : any;
                 severity = json_res.vulnerabilities[ent].level;
                 if (severity === 'error') {
@@ -162,6 +186,14 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
                 diagnostics.push(diagnostic);
             }
         }
+        tableHtml = tableHtml + tableSuffix;
+        detailHtml = detailHtml + detailSuffix;
+        let html = tableHtml + detailHtml;
+        fs.appendFile(htmlPath, html, function (err) {
+            if (err)
+                throw err;
+        });
+
         console.log("Security Analyze With Complier Finish.");
         collection.set(document.uri, diagnostics);
 	} else {
