@@ -1,0 +1,14 @@
+## Solidity code → AST file
+solidity-parser xxx.sol xxx.ast
+
+## AST file → Solidity code
+
+
+## function sig
+./lib/solc4.26 --hashes ./test/xxx.sol
+
+
+## Run MadMax
+./lib/solc4.26 --bin-runtime ./test/xxx.sol | tail -n 1 > ./output/BIN/xxx.hex
+# PATH = ~/Desktop/SmartIDE/SCCC/secureContract/MadMax/output/sol4
+../../../MadMax/bin/analyze.sh ../../../output/BIN/sol4.hex ../../../MadMax/tools/bulk_analyser/mySpec.dl

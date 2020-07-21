@@ -1,0 +1,8 @@
+sol0 : safety contract (+safemath +safemathlib)
+sol1 : -safemath -safemathlib
+sol2 : +safemath -safemathlib
+sol3 : -safemath +safemathlib
+sol4 : Unbounded Mass Operations
+sol5 : Non-Isolated External Calls (Wallet Griefing)
+sol6 : Integer Overflows
+sol7 : Integer Overflows with 3 functions

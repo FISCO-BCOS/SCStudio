@@ -1,0 +1,487 @@
+#include "lib/vandal.dl"
+
+.type Block
+.type Function
+
+// INPUT
+
+// .decl edge(h:Statement, t:Statement)                // There is a CFG edge from h to t
+// .input edge
+// .decl def(var:Variable, stmt:Statement)             // var is defined by stmt
+// .input def
+// .decl use(var:Variable, stmt:Statement, i:number)   // var is used by stmt as argument i
+// .input use
+// .decl op(stmt:Statement, op:Opcode)                 // stmt's opcode is op
+// .input op
+// .decl value(var:Variable, val:Value)                // A variable's possible value set if known
+// .input value
+.decl isBlock(b: Block)
+.decl block(s: Statement, b: Block)
+.input block
+
+isBlock(b) :- block(_, b).
+
+.decl in_function(b:Block, t:Function)
+.input in_function
+
+.decl StatementInPublicFunction(s: Statement, f: Function)
+
+StatementInPublicFunction(s, f) :-
+  block(s, b),
+  in_function(b, f).
+
+//
+// *** CONTROL-FLOW ANALYSIS CONCEPTS *** 
+//
+
+.decl Entry(s:Statement)
+.decl Exit(s:Statement)
+.decl IsStatement(s:Statement)
+
+.decl IsJump(s:Statement)
+IsJump(s) :- op(s, "JUMP").
+IsJump(s) :- op(s, "JUMPI").
+
+.decl JUMPDEST(s:Statement)
+JUMPDEST(s) :- op(s, "JUMPDEST").
+
+.decl JUMP(stmt:Statement, dest:Variable)
+JUMP(stmt, dest) :-
+  op(stmt, "JUMP"),
+  use(dest, stmt, 1).
+
+
+IsStatement(s) :- op(s, _).
+
+Entry(s) :- IsStatement(s), !edge(_,s).
+Exit(s) :- IsStatement(s), !edge(s,_).
+
+.decl BasicBlockBegin(s:Statement)
+BasicBlockBegin(s) :- Entry(s).
+BasicBlockBegin(s) :- JUMPDEST(s).
+BasicBlockBegin(t) :- IsJump(s), edge(s,t).
+
+.decl NextInSameBasicBlock(s:Statement, next:Statement)
+NextInSameBasicBlock(s,next) :-
+  edge(s,next), !BasicBlockBegin(next).
+NextInSameBasicBlock(s,next) :-
+  BasicBlockHead(s,next), edge(s,next).
+
+
+.decl BasicBlockHead(s:Statement, head:Statement)
+BasicBlockHead(s,s) :- BasicBlockBegin(s).
+BasicBlockHead(s,h) :- BasicBlockHead(prev,h), NextInSameBasicBlock(prev,s).
+ .plan 1:(2,1)
+
+
+.decl CanReach(s:Statement, t:Statement)
+
+CanReach(s,s) :- IsStatement(s).
+CanReach(s,t) :- edge(s,t).
+CanReach(s,t) :- CanReach(s,v), edge(v,t).
+
+
+/******************  Our Work  ******************/
+
+/* **** Declare a Dynamic Load **** */
+/*
+// Declare a dynamic load
+.decl DynamicLoad(var: Variable)
+DynamicLoad(var) :-
+  RuntimeKnowable(op),
+  op(stmt,op),
+  def(var,stmt).
+DynamicLoad(var) :-
+  SLOAD(_,_,var).
+*/
+
+/* **** Declare an onlyOwner **** */
+// Declare an onlyOwner
+.decl OnlyOwner(stmt: Statement)
+.output OnlyOwner
+
+OnlyOwner(stmtLoad) :-
+  op(stmt,"CALLER"),
+  block(stmt,b),
+  op(stmtLoad, "SLOAD"),
+  block(stmtLoad, b),
+  op(stmt_,"EQ"),
+  block(stmt_,b).
+
+
+/* **** Declare a Transfer **** */
+
+/* balances[_to] += _amount */
+.decl BalanceAddStmt(func: Function, s:Statement)
+BalanceAddStmt(func, stmt_add) :-
+
+  // V70 = SHA3 0x0 0x40
+  op(stmt_map2, "SHA3"),
+  def(balance_to, stmt_map2),
+  StatementInPublicFunction(stmt_map2, func),
+
+  // V72 = S[V70]
+  op(loadValStmt2, "SLOAD"),
+  def(load_val2, loadValStmt2),
+  use(balance_to, loadValStmt2, _),
+  StatementInPublicFunction(loadValStmt2, func),
+
+  // V73 = ADD V72 V30
+  op(stmt_add, "ADD"),
+  def(money_gain, stmt_add),
+  use(load_val2, stmt_add, _),
+  use(amount, stmt_add, _),
+  StatementInPublicFunction(stmt_add, func),
+
+  // S[V70] = V73
+  op(storeValStmt2, "SSTORE"),
+  use(balance_to, storeValStmt2, 1),
+  use(money_gain, storeValStmt2, 2),
+  StatementInPublicFunction(storeValStmt2, func).
+
+
+/* balances[_from] -= _amount */
+.decl BalanceSubStmt(func: Function, s:Statement)
+BalanceSubStmt(func, stmt_sub) :-
+  
+  // V56 = SHA3 0x0 0x40
+  op(stmt_map, "SHA3"),
+  def(balance_from, stmt_map),
+  StatementInPublicFunction(stmt_map, func),
+    
+  // V58 = S[V56]
+  op(loadValStmt, "SLOAD"),
+  def(load_val, loadValStmt),
+  use(balance_from, loadValStmt, _),
+  StatementInPublicFunction(loadValStmt, func),
+    
+  // V59 = SUB V58 V30
+  op(stmt_sub, "SUB"),
+  def(money_left, stmt_sub),
+  use(load_val, stmt_sub, 1),
+  use(amount, stmt_sub, 2),
+  StatementInPublicFunction(stmt_sub, func),
+
+  // S[V56] = V59
+  op(storeValStmt, "SSTORE"),
+  use(balance_to, storeValStmt, 1),
+  use(money_left, storeValStmt, 2),
+  StatementInPublicFunction(storeValStmt, func).
+
+
+/* var is a param of f */
+//.decl SepcThreeParamOfFunction(f: Function, from_: Variable, to_: Variable, amount_: Variable)
+//SepcThreeParamOfFunction(f, from_, to_, amount_) :-
+.decl SepcThreeParamOfFunction(f: Function)
+SepcThreeParamOfFunction(f) :-
+  op(stmt1, "CALLDATALOAD"),
+  def(var1, stmt1),
+  op(stmt2, "AND"), 
+  def(from_, stmt2),                            // address
+  use(var1, stmt2, 2),
+  
+  op(stmt3, "CALLDATALOAD"),
+  def(var2, stmt3),
+  op(stmt4, "AND"),
+  def(to_, stmt4),                              // address
+  use(var2, stmt4, 2),
+
+  var1 != var2,
+
+  op(stmt5, "CALLDATALOAD"),
+  def(amount_, stmt5),                          // uint
+
+// !!!!! fcorleone thinks we should make sure these stmts are in the same block not CanReach !!!!!
+  CanReach(stmt1, stmt2),
+  CanReach(stmt2, stmt3),
+  CanReach(stmt3, stmt4),
+  CanReach(stmt4, stmt5),
+
+//  block(stmt1,b1),
+//  block(stmt2,b1),
+//  block(stmt3,b1),
+//  block(stmt4,b1),
+//  block(stmt5,b1),
+
+  StatementInPublicFunction(stmt1, f),
+  StatementInPublicFunction(stmt2, f),
+  StatementInPublicFunction(stmt3, f),
+  StatementInPublicFunction(stmt4, f),
+  StatementInPublicFunction(stmt5, f).
+//  StatementInPublicFunction(stmt6, f).
+
+/* var is a param of f */
+//.decl SepcTwoParamOfFunction(f: Function, add_: Variable, amount_: Variable)
+//SepcTwoParamOfFunction(f, add_, amount_) :-
+.decl SepcTwoParamOfFunction(f: Function)
+SepcTwoParamOfFunction(f) :-
+  AddressVariableForMemory(var1),               // address
+  def(var1, stmt1),
+
+  op(stmt2, "CALLDATALOAD"),
+  def(amount_, stmt2),                          // uint
+
+// !!!!! fcorleone thinks we should make sure these stmts are in the same block not CanReach !!!!!
+//  block(stmt1,b1),
+//  block(stmt2,b1),
+//  block(stmt3,b1),
+//  block(stmt4,b1),
+//  block(stmt5,b1),
+
+  StatementInPublicFunction(stmt1, f),
+  StatementInPublicFunction(stmt2, f).
+
+//.decl Transfer(func: Function, from_: Variable, to_: Variable, amount_: Variable)
+.decl Transfer(func: Function)
+.output Transfer
+
+//Transfer(func, from_, to_, amount_) :-
+Transfer(func) :-
+ // SepcThreeParamOfFunction(func, from_, to_, amount_),
+  BalanceSubStmt(func, stmt_sub),
+  BalanceAddStmt(func, stmt_add).
+
+
+.decl TransferWithoutSub(func: Function)
+.output TransferWithoutSub
+
+TransferWithoutSub(func) :-
+  SepcTwoParamOfFunction(func),
+  !SepcThreeParamOfFunction(func),
+
+  BalanceAddStmt(func, stmt_add),
+  !Transfer(func).
+
+.decl TransferWithoutAdd(func: Function)
+.output TransferWithoutAdd
+
+TransferWithoutAdd(func) :-
+  SepcTwoParamOfFunction(func),
+  !SepcThreeParamOfFunction(func),
+
+  BalanceSubStmt(func, stmt_sub),
+  !Transfer(func).
+
+/* **** Declare an address variable **** */
+.decl AddressVariableForMemory(var_Add:Variable)
+.output AddressVariableForMemory
+
+AddressVariableForMemory(var_Add) :-
+  op(stmt_And, "AND"),
+  def(And1Val, stmt_And),
+  block(stmt_And,b0),
+  op(stmt_And1, "AND"),
+  use(And1Val, stmt_And1, _),
+  block(stmt_And1,b0),
+  def(var_Add, stmt_And1).
+
+/* **** Declare of ApproveStatement **** */
+
+.decl ApproveMent(func_: Function)
+.output ApproveMent
+// SHA3's result is stored in memory for the fisrt dimension
+// Only test if there are two address in a block and 
+ApproveMent(func_) :-
+// Two address variables used
+  AddressVariableForMemory(var1),
+  AddressVariableForMemory(var2),
+  op(stmt1, "MSTORE"),
+  use(var1, stmt1, _),
+  op(stmt2, "MSTORE"),
+  use(var2, stmt2, _),
+// Check whether in the same block so in the same function
+  block(stmt1,b),
+  block(stmt2,b),
+// Check for sub operation
+  op(stmt_Map, "SHA3"),
+  def(Offset, stmt_Map),
+  op(stmtStore, "MSTORE"),
+  use(Offset, stmtStore,_ ),
+
+  op(stmt_Map2,"SHA3"),
+  def(Element,stmt_Map2),
+//  StatementInPublicFunction(stmt_map, func_),
+  op(loadValStmt_, "SLOAD"),
+  def(allow, loadValStmt_),
+  use(Element, loadValStmt_, _),
+//  StatementInPublicFunction(loadValStmt_, func_),  
+  op(stmt_sub_, "SUB"),
+  use(allow, stmt_sub_, 1),
+  block(stmt_sub_, b),
+  StatementInPublicFunction(stmt_sub_, func_).
+
+ // StatementInPublicFunction(stmt1, func_),
+ // StatementInPublicFunction(stmt2, func_),
+
+/* **** Declare of Caller in a block **** */
+.decl CallerinBlock(b: Block)
+
+CallerinBlock(b) :-
+  op(stmt, "CALLER"),
+  block(stmt, b).
+
+/* **** Declare of allowTransfer **** */
+.decl allowTransfer(stmt: Statement)
+.output allowTransfer
+
+allowTransfer(stmtAllow) :-
+  op(stmtAllow, "SLOAD"),
+  def(AllowValue, stmtAllow),
+  op(stmtAllow2, "DIV"),
+  use(AllowValue, stmtAllow2, _),
+  def(AllowValue2,stmtAllow2),
+  block(stmtAllow2, b1),
+  op(stmtJump, "JUMPI"),
+  use(JumpV, stmtJump, _),
+  block(stmtJump, b1),
+  !CallerinBlock(b1),
+  depends(JumpV, AllowValue2).
+
+/* **** Declare of frozeFucntion **** */
+.decl frozeFunction(func: Function)
+.output frozeFunction
+
+frozeFunction(func) :-
+  op(stmt1, "CALLDATALOAD"),
+  def(var1, stmt1),
+  op(stmt2, "AND"), 
+  use(var1, stmt2, 2),
+  def(target, stmt2),                            // target
+  
+  op(stmt3, "CALLDATALOAD"),
+  def(var2, stmt3),
+  op(stmt4, "ISZERO"),
+  use(var2, stmt4, _),
+  def(froze, stmt4),                              // frozeFlag
+
+  op(stmtSLOAD, "SLOAD"),
+  def(Vtarget, stmtSLOAD),
+
+  op(stmtOR,"OR"),
+  use(V1, stmtOR, 1),
+  use(V2, stmtOR, 2),
+  def(VStore, stmtOR),
+
+  depends(V1, froze),
+  depends(V2, Vtarget),
+
+  op(stmtStore, "SSTORE"),
+  use(VStore, stmtStore, _),
+
+  CanReach(stmt2, stmt4),
+  CanReach(stmt4, stmtSLOAD),
+  CanReach(stmtSLOAD, stmtOR),
+  CanReach(stmtOR, stmtStore),
+
+  StatementInPublicFunction(stmtStore, func).
+
+
+
+/* **** Declare of Backdoors **** */
+// TYPE1  Arbitraytransfer (from, to, amount)
+.decl ArbitraryTransfer(func: Function)
+.output ArbitraryTransfer
+
+ArbitraryTransfer(func) :-
+  // first it is a tranfer
+  SepcThreeParamOfFunction(func),
+  Transfer(func),
+  // ownerOnly: require(msg.sender==owner)
+  OnlyOwner(stmt),
+  StatementInPublicFunction(stmt, func),
+  // withoutApprovement
+  !ApproveMent(func).
+
+// TYPE2 GenerateToken(to, amount)
+.decl GenerateToken(func: Function)
+.output GenerateToken
+
+GenerateToken(func) :-
+  // first it is a transfer without from
+  TransferWithoutSub(func),
+  //ownerOnly: require(msg.sender == owner)
+  OnlyOwner(stmt),
+  StatementInPublicFunction(stmt, func).
+
+// TYPE3 DestroyToken(from, amount)
+.decl DestroyToken(func: Function)
+.output DestroyToken
+
+DestroyToken(func) :-
+  // first it is a transfer without to
+  TransferWithoutAdd(func),
+  //ownerOnly: require(msg.sender == owner)
+  OnlyOwner(stmt),
+  StatementInPublicFunction(stmt, func).
+
+// TYPE4 FrozeAccount(account)
+.decl FrozeAccount(func: Function)
+.output FrozeAccount
+FrozeAccount(funcFroze) :-
+  OnlyOwner(stmt),
+  frozeFunction(funcFroze),
+  StatementInPublicFunction(stmt, funcFroze).
+
+// TYPE5 DisableTransfer(bool)
+.decl DisableTransfer(func: Function)
+//.decl DisableTransfer(stmt: Statement)
+.output DisableTransfer
+
+DisableTransfer(funcAllow) :-
+//DisableTransfer(stmt) :-
+// A transfer with a modifier named allowTransfer
+  SepcThreeParamOfFunction(func),
+  Transfer(funcTransfer),
+  allowTransfer(stmt1),
+  StatementInPublicFunction(stmt1, funcTransfer),
+  use(VarLoad, stmt1, _),
+
+// A function that is onlyowner to forbit transfer
+  OnlyOwner(stmt),
+  StatementInPublicFunction(stmt, funcAllow),
+  op(stmtStore, "SSTORE"),
+  CanReach(stmt,stmtStore),
+  use(VarStore, stmtStore, _),
+
+// The Transfer function use the same place of the allowTransfer to check the value.
+  value(VarStore, v1),
+  value(VarLoad, v1).
+
+DisableTransfer(funcAllow) :- 
+//DisableTransfer(stmt) :-
+// A transfer with a modifier named allowTransfer
+  TransferWithoutAdd(funcTransfer),
+  allowTransfer(stmt1),
+  StatementInPublicFunction(stmt1, funcTransfer),
+  use(VarLoad, stmt1, _),
+
+// A function that is onlyowner to forbit transfer
+  OnlyOwner(stmt),
+  StatementInPublicFunction(stmt, funcAllow),
+  op(stmtStore, "SSTORE"),
+  CanReach(stmt,stmtStore),
+  use(VarStore, stmtStore, _),
+
+// The Transfer function use the same place of the allowTransfer to check the value.
+  value(VarStore, v1),
+  value(VarLoad, v1).
+
+DisableTransfer(funcAllow) :-
+//DisableTransfer(stmt) :-
+// A transfer with a modifier named allowTransfer
+  TransferWithoutSub(funcTransfer),
+  allowTransfer(stmt1),
+  StatementInPublicFunction(stmt1, funcTransfer),
+  use(VarLoad, stmt1, _),
+
+// A function that is onlyowner to forbit transfer
+  OnlyOwner(stmt),
+  StatementInPublicFunction(stmt, funcAllow),
+  op(stmtStore, "SSTORE"),
+  CanReach(stmt,stmtStore),
+  use(VarStore, stmtStore, _),
+
+// The Transfer function use the same place of the allowTransfer to check the value.
+  value(VarStore, v1),
+  value(VarLoad, v1).
+

@@ -1,0 +1,67 @@
+{
+ "contractname": "reentrancy.sol",
+ "vulnerabilities": {
+  "ent1": {
+   "name": "Function or Variable Default Visibility",
+   "description": "Functions or variables that do not have a visibility type specified are public by default. This can lead to a vulnerability if a developer forgot to set the visibility and a malicious user is able to make unauthorized or unintended state changes.",
+   "swcId": "100",
+   "lineNo": [
+    3
+   ],
+   "advice": "Functions can be specified as being external, public, internal or private. It is recommended to make a conscious decision on which visibility type is appropriate for a function. This can dramatically reduce the attack surface of a contract system.",
+   "level": "warning"
+  },
+  "ent3": {
+   "name": "Outdated Compiler Version",
+   "description": "Using an outdated compiler version can be problematic especially if there are publicly disclosed bugs and issues that affect the current compiler version.",
+   "swcId": "102",
+   "lineNo": [
+    1
+   ],
+   "advice": "It is recommended to use a recent version of the Solidity compiler.",
+   "level": "warning"
+  },
+  "ent4": {
+   "name": "Unchecked Call Return Value",
+   "description": "The return value of a message call is not checked. Execution will resume even if the called contract throws an exception. If the call fails accidentally or an attacker forces the call to fail, this may cause unexpected behaviour in the subsequent program logic.",
+   "swcId": "104",
+   "lineNo": [
+    8,
+    13
+   ],
+   "advice": "If you choose to use low-level call methods, make sure to handle the possibility that the call will fail by checking the return value.",
+   "level": "error"
+  },
+  "ent7": {
+   "name": "Reentrancy",
+   "description": "One of the major dangers of calling external contracts is that they can take over the control flow. In the reentrancy attack (a.k.a. recursive call attack), a malicious contract calls back into the calling contract before the first invocation of the function is finished. This may cause the different invocations of the function to interact in undesirable ways.",
+   "swcId": "107",
+   "lineNo": [
+    13
+   ],
+   "advice": "Use transfer() instead of contract.call() to transfer Ether to untrusted addresses. And when using low-level calls, make sure all internal state changes are performed before the call is executed.",
+   "level": "error"
+  },
+  "ent19": {
+   "name": "Call-stack Depth Limit Exceeding",
+   "description": "The Ethereum Virtual Machine implementation limits the call-stack's depth to 1024 frames. The call-stack's depth increases by one if a contract calls another via the send or call instruction. This opens an attack vector to deliberately cause the send instruction to fail.",
+   "swcId": "",
+   "lineNo": [
+    13
+   ],
+   "advice": "Specifically, an attacker can prepare a contract to call itself 1023 times before sending a transaction to KoET to claim the throne from the current king. Thus, the attacker ensures that the call-stack's depth of KoET reaches 1024, causing the send instruction in Line 15 to fail. As the result, the current king will not receive any payment.",
+   "level": "error"
+  },
+  "ent23": {
+   "name": "Use of call function with no data",
+   "description": "Use of low-level call function with no arguments provided.",
+   "swcId": "",
+   "lineNo": [
+    8,
+    13
+   ],
+   "advice": "In this case, transfer or send function call is more secure. Another option is to implement the desired functionality in the separate public function of the target contract. Nevertheless, if use of call function is necessary due to the target contract design, gas limit should be added .gas().",
+   "level": "warning"
+  }
+ }
+}
