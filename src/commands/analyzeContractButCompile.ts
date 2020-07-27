@@ -189,7 +189,7 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
         tableHtml = tableHtml + tableSuffix;
         detailHtml = detailHtml + detailSuffix;
         let html = tableHtml + detailHtml;
-        fs.appendFile(htmlPath, html, function (err) {
+        fs.writeFile(htmlPath, html, function (err) {
             if (err)
                 throw err;
         });

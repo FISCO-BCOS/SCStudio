@@ -170,7 +170,7 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
           
                 // console.log(details)
                 // console.log(FILEPATH)
-                fs.appendFile(FILEPATH, details, function (err) {
+                fs.writeFile(FILEPATH, details, function (err) {
                     if (err)
                         throw err;
                 });
