@@ -78,7 +78,7 @@ export function activate(context: vscode.ExtensionContext) {
 					// vscode.Range.arguments
 					console.log('Dot trigger.');
 					if(event.contentChanges[0].range) {
-						if (demoProvider.Items === []) {
+						// if (demoProvider.Items === []) {
 							let range = event.contentChanges[0].range;
 							let str_range = JSON.stringify(range);
 							let json_range = JSON.parse(str_range);
@@ -95,19 +95,11 @@ export function activate(context: vscode.ExtensionContext) {
 									}
 								}
 								const globalVariableContext = GetContextualAutoCompleteByGlobalVariable(currentSen, start);
-								// let NormalProvider = new ItemProvider([],globalVariableContext);
-								// context.subscriptions.pop()
-								// let solnorPv = vscode.languages.registerCompletionItemProvider("solidity", NormalProvider,'.');  
-								// context.subscriptions.push(solnorPv);
-
-								// let demoProvider = new ItemProvider([],[]);
-								// let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider,'.');  
-								// context.subscriptions.push(solPv);
 
 								demoProvider.Items = globalVariableContext;
 								demoProvider.codeComs = [];
 							}
-						}
+						// }
 					}
 				}
 			}

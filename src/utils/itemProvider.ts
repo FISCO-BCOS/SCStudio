@@ -52,31 +52,14 @@ export class ItemProvider implements vscode.CompletionItemProvider{
 
 			// display candidates in probablidity order
 			for(var i in arr) {
-				var temp = new vscode.CompletionItem(arr[i], vscode.CompletionItemKind.Field);
+				var temp = new vscode.CompletionItem(arr[i], vscode.CompletionItemKind.Variable);
 				if (i.length === 1) 
 					temp.sortText = '0' + i;
 				else 
 					temp.sortText = i;
 				CList.push(temp);
 			}
-
-			// superagent.post(senUrl)
-			// 	.send(strjson)
-			// 	.end((err: Error, res: superagent.Response) => {
-			// 		if (!err) {
-			// 			var arr = JSON.parse(res.text).data.results;
-			// 			for(var it in arr) {
-			// 				var temp = new vscode.CompletionItem(it, vscode.CompletionItemKind.Field);
-			// 				temp.sortText = cnt.toString();
-			// 				CList.push(temp);
-			// 				cnt += 1;
-			// 			}
-
-			// 		} else{
-			// 			console.log('err:' + err);
-			// 		}
-			// 	});
-			// this.codeComs = CList;
+			
 			return CList;
 		}
 		else if (context.triggerCharacter === '.') {  // API completion

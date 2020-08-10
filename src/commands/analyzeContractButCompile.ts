@@ -122,8 +122,16 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
     }
     // console.log('FILEPATH  '+FILEPATH)
     let htmlPath = FILEPATH;
-    FILEPATH = FILEPATH.substring(0,FILEPATH.lastIndexOf('/'))+'/vulnerabilitiesInfo.txt';
-    htmlPath = htmlPath.substring(0,FILEPATH.lastIndexOf('/'))+'/vulnerabilitiesReport.html';
+    let datetime = new Date();
+    var y = datetime.getFullYear();
+    var m = datetime.getMonth()+1;
+    var d = datetime.getDate();
+    var h = datetime.getHours();
+    var mm = datetime.getMinutes();
+    var s = datetime.getSeconds();
+    let dateString = y.toString() + m.toString() + d.toString() + '_' + h.toString() + mm.toString() + s.toString();
+    FILEPATH = FILEPATH.substring(0,FILEPATH.lastIndexOf('/')) + '/vulnerabilitiesInfo_' + dateString + '.txt';
+    htmlPath = htmlPath.substring(0,FILEPATH.lastIndexOf('/')) + '/vulnerabilitiesReport_' + dateString + '.html';
     if (document) {
         // console.log(document.uri)
         vscode.languages.getDiagnostics(document.uri).slice(1,1);
@@ -165,7 +173,7 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
 
                 // console.log(details)
                 // console.log(FILEPATH)
-                fs.appendFile(FILEPATH, details, function (err) {
+                fs.writeFile(FILEPATH, details, function (err) {
                     if (err)
                         throw err;
                 });

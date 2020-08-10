@@ -4,14 +4,17 @@ export function GetContextualAutoCompleteByGlobalVariable(lineText: string, word
     if (isAutocompleteTrigeredByVariableName('block', lineText, wordEndPosition)) {
         return getBlockCompletionItems();
     }
-    if (isAutocompleteTrigeredByVariableName('msg', lineText, wordEndPosition)) {
+    else if (isAutocompleteTrigeredByVariableName('msg', lineText, wordEndPosition)) {
         return getMsgCompletionItems();
     }
-    if (isAutocompleteTrigeredByVariableName('tx', lineText, wordEndPosition)) {
+    else if (isAutocompleteTrigeredByVariableName('tx', lineText, wordEndPosition)) {
         return getTxCompletionItems();
     }
-    if (isAutocompleteTrigeredByVariableName('abi', lineText, wordEndPosition)) {
+    else if (isAutocompleteTrigeredByVariableName('abi', lineText, wordEndPosition)) {
         return getAbiCompletionItems();
+    }
+    else {
+        return getSafeMathCompletionItems();
     }
     return [];
 }
@@ -21,7 +24,7 @@ function getBlockCompletionItems(): CompletionItem[] {
     return [
         {
             detail: '(address): Current block miner’s address',
-            kind: CompletionItemKind.Property,
+            kind: CompletionItemKind.Field,
             label: 'coinbase',
         },
         {
@@ -32,22 +35,22 @@ function getBlockCompletionItems(): CompletionItem[] {
         },
         {
             detail: '(uint): current block difficulty',
-            kind: CompletionItemKind.Property,
+            kind: CompletionItemKind.Field,
             label: 'difficulty',
         },
         {
             detail: '(uint): current block gaslimit',
-            kind: CompletionItemKind.Property,
+            kind: CompletionItemKind.Field,
             label: 'gaslimit',
         },
         {
             detail: '(uint): current block number',
-            kind: CompletionItemKind.Property,
+            kind: CompletionItemKind.Field,
             label: 'number',
         },
         {
             detail: '(uint): current block timestamp as seconds since unix epoch',
-            kind: CompletionItemKind.Property,
+            kind: CompletionItemKind.Field,
             label: 'timestamp',
         },
     ];
@@ -57,27 +60,27 @@ function getMsgCompletionItems(): CompletionItem[] {
     return [
         {
             detail: '(bytes): complete calldata',
-            kind: CompletionItemKind.Property,
+            kind: CompletionItemKind.Field,
             label: 'data',
         },
         {
             detail: '(uint): remaining gas DEPRICATED in 0.4.21 use gasleft()',
-            kind: CompletionItemKind.Property,
+            kind: CompletionItemKind.Field,
             label: 'gas',
         },
         {
             detail: '(address): sender of the message (current call)',
-            kind: CompletionItemKind.Property,
+            kind: CompletionItemKind.Field,
             label: 'sender',
         },
         {
             detail: '(bytes4): first four bytes of the calldata (i.e. function identifier)',
-            kind: CompletionItemKind.Property,
+            kind: CompletionItemKind.Field,
             label: 'sig',
         },
         {
             detail: '(uint): number of wei sent with the message',
-            kind: CompletionItemKind.Property,
+            kind: CompletionItemKind.Field,
             label: 'value',
         },
     ];
@@ -116,13 +119,42 @@ function getTxCompletionItems(): CompletionItem[] {
     return [
         {
             detail: '(uint): gas price of the transaction',
-            kind: CompletionItemKind.Property,
+            kind: CompletionItemKind.Field,
             label: 'gas',
         },
         {
             detail: '(address): sender of the transaction (full call chain)',
-            kind: CompletionItemKind.Property,
+            kind: CompletionItemKind.Field,
             label: 'origin',
+        },
+    ];
+}
+
+function getSafeMathCompletionItems(): CompletionItem[] {
+    return [
+        {
+            detail: '(uint): using SafeMath Library to get sum',
+            insertText: 'add();',
+            kind: CompletionItemKind.Method,
+            label: 'add',
+        },
+        {
+            detail: '(uint): using SafeMath Library to get difference',
+            insertText: 'sub();',
+            kind: CompletionItemKind.Method,
+            label: 'sub',
+        },
+        {
+            detail: '(uint): using SafeMath Library to get product',
+            insertText: 'mul();',
+            kind: CompletionItemKind.Method,
+            label: 'mul',
+        },
+        {
+            detail: '(uint): using SafeMath Library to get quotient',
+            insertText: 'div();',
+            kind: CompletionItemKind.Method,
+            label: 'div',
         },
     ];
 }
