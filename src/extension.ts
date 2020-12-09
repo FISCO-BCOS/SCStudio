@@ -5,8 +5,6 @@ import { ext } from "./extensionVariables";
 import {analyzeContract} from "./commands/analyzeContract";
 import {analyzeContractWithoutCompile} from "./commands/analyzeContractWithoutCompile";
 import {ItemProvider} from "./utils/itemProvider";
-import {getFileContent} from "./utils/getFileContent";
-import {postStringRequest} from "./utils/httpUtils";
 import {GetContextualAutoCompleteByGlobalVariable} from "./utils/Apicompletion";
 
 let diagnosticsCollection: vscode.DiagnosticCollection;
@@ -14,7 +12,9 @@ let diagnosticsCollection: vscode.DiagnosticCollection;
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	let recommendEnabled: boolean = true;
+	// not enable token recommend at initialization
+	let recommendEnabled: boolean = false;
+
 	ext.context = context;
 	ext.outputChannel = vscode.window.createOutputChannel("SCStudio");
 
@@ -38,12 +38,19 @@ export function activate(context: vscode.ExtensionContext) {
 	let analyzeSubWithoutCompiler = vscode.commands.registerCommand('scstudio.analyzeContractWithoutCompile', async () => {
 		analyzeContractWithoutCompile(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document);
 	});
+
+	let demoProvider = new ItemProvider([], []);
+	let solPv : vscode.Disposable;  
  
-	let disprovideStatement = vscode.commands.registerCommand('scstudio.disablerecommand', () => {
-		recommendEnabled = false;
-	}); 
 	let provideStatement = vscode.commands.registerCommand('scstudio.enablerecommand', () => {
 		recommendEnabled = true;
+		solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider, '.', ' ', '\n'); 
+		context.subscriptions.push(solPv);
+	}); 
+
+	let disprovideStatement = vscode.commands.registerCommand('scstudio.disablerecommand', () => {
+		recommendEnabled = false;
+		solPv.dispose();
 	}); 
 
     // context.subscriptions.push(solPv);
@@ -52,12 +59,8 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(provideStatement);
 	context.subscriptions.push(disprovideStatement);
 
-	let demoProvider = new ItemProvider([],[]);
-	let solPv = vscode.languages.registerCompletionItemProvider("solidity", demoProvider, '.', ' ', '\n');  
-	context.subscriptions.push(solPv);
-	
-
 	if(recommendEnabled) {
+
 		vscode.workspace.onDidChangeTextDocument(async function(event) {
 			// demoProvider.Items = [];
 			// demoProvider.codeComs = [];
@@ -76,40 +79,29 @@ export function activate(context: vscode.ExtensionContext) {
 					// vscode.Range.arguments
 					console.log('Dot trigger.');
 					if(event.contentChanges[0].range) {
-						// if (demoProvider.Items === []) {
-							let range = event.contentChanges[0].range;
-							let str_range = JSON.stringify(range);
-							let json_range = JSON.parse(str_range);
-							let currentLine = json_range[0].line + 1;
-							let currentSen = vscode.window.activeTextEditor?.document.lineAt(currentLine - 1).text;
-							let codes : string[];
-							codes = [];
-							let start = 0;
-							if (currentSen) {
-								for(let i = 0;;i++) {
-									if(currentSen[i] === '.') {
-										start = i;
-										break;
-									}
+						let range = event.contentChanges[0].range;
+						let str_range = JSON.stringify(range);
+						let json_range = JSON.parse(str_range);
+						let currentLine = json_range[0].line + 1;
+						let currentSen = vscode.window.activeTextEditor?.document.lineAt(currentLine - 1).text;
+						let codes : string[];
+						codes = [];
+						let start = 0;
+						if (currentSen) {
+							for(let i = 0;;i++) {
+								if(currentSen[i] === '.') {
+									start = i;
+									break;
 								}
-								const globalVariableContext = GetContextualAutoCompleteByGlobalVariable(currentSen, start);
-
-								demoProvider.Items = globalVariableContext;
-								demoProvider.codeComs = [];
 							}
-						// }
+							const globalVariableContext = GetContextualAutoCompleteByGlobalVariable(currentSen, start);
+
+							demoProvider.Items = globalVariableContext;
+							demoProvider.codeComs = [];
+						}
 					}
 				}
 			}
 		});
 	}
-}
-
-// this method is called when your extension is deactivated
-export function deactivate() {
-	// if (!client) {
-    //     return undefined;
-    // }
-	// return client.stop();
-	console.log("See You Again !");
 }

@@ -46,6 +46,7 @@ npm install
 # install dependency-extension
 code --install-extension philhindle.errorlens
 code --install-extension JuanBlanco.solidity
+code --install-extension atishay-jain.all-autocomplete
 # launch vscode
 code .
 ```

@@ -32,7 +32,7 @@ export class ItemProvider implements vscode.CompletionItemProvider{
 	
     public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.CompletionItem[]{	
 
-		if (context.triggerCharacter === ' ' || context.triggerCharacter === '\n') {  // token suggestion
+		if (context.triggerCharacter === ' ') {  // token suggestion
 			var previous = document.getText(new vscode.Range(new vscode.Position(0,0), position));
 			var sentence = document.lineAt(position).text;
 			var curLine = position.line;
@@ -52,6 +52,16 @@ export class ItemProvider implements vscode.CompletionItemProvider{
 			// display candidates in probablidity order
 			for(var i in arr) {
 				var temp = new vscode.CompletionItem(arr[i], vscode.CompletionItemKind.Variable);
+				sentence = sentence.trim();
+				if (sentence.startsWith("contract")) 
+					temp.detail = '(New) Contract name'
+				else if (sentence.startsWith("function")) 
+					temp.detail = '(New) Function name'
+				else if (  sentence.startsWith("int") || sentence.startsWith("uint") || sentence.startsWith("var") || sentence.startsWith("bool")
+						|| sentence.startsWith("fixed") || sentence.startsWith("ufixed") || sentence.startsWith("string") || sentence.startsWith("address")
+						|| sentence.startsWith("byte") || sentence.startsWith("bytes") ) 
+					temp.detail = '(New) Variable name'
+				
 				if (i.length === 1) 
 					temp.sortText = '0' + i;
 				else 
@@ -69,11 +79,11 @@ export class ItemProvider implements vscode.CompletionItemProvider{
 		}
 	}
 	
-    public resolveCompletionItem(item: vscode.CompletionItem, token: vscode.CancellationToken): any{
+    public resolveCompletionItem(item: vscode.CompletionItem, token: vscode.CancellationToken): any {
         return null;
 	}
 	
-    dispose(){
+    dispose() {
 
     }
 }

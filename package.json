@@ -1,13 +1,28 @@
 {
 	"name": "scstudio",
 	"displayName": "SCStudio",
-	"description": "",
+	"description": "Making Smart Contract Development More Secure and Easier",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.42.0"
 	},
+	"publisher": "Renardbebe",
+	"contributors": [
+		"Tsinghua-Renardbebe",
+		"Tsinghua-fCorleone",
+		"Tsinghua-Aurora",
+		"WeBank"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/fCorleone/SecSolidity"
+	},
+	"bugs": {
+		
+	},
 	"categories": [
-		"Other"
+		"Programming Languages",
+    	"Snippets"
 	],
 	"activationEvents": [
 		"*"
@@ -81,7 +96,8 @@
 	},
 	"extensionDependencies": [
 		"philhindle.errorlens",
-		"JuanBlanco.solidity"
+		"JuanBlanco.solidity",
+		"atishay-jain.all-autocomplete"
 	],
 	"dependencies": {
 		"@types/superagent": "^4.1.7",
