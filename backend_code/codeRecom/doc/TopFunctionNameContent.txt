@@ -1337,7 +1337,6 @@ resetCounter
 setCmd
 nodeExists
 retrait_1
-getContractName
 updateTimer
 getContract
 now_

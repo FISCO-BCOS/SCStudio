@@ -1,7 +1,6 @@
 import * as vscode from 'vscode'
 import { getFileContent } from '../utils/getFileContent'
 import { getRequest, postRequest } from '../utils/httpUtils'
-import { getContractName } from '../utils/getContractName'
 import fs = require('fs');
 import { detailItem, detailPrefix, detailSuffix, tablePrefix, tableSuffix, tableItem } from './ReportTemplate';
 
@@ -31,9 +30,6 @@ export async function analyzeContractWithoutCompile(
         const fileContent = await getFileContent(
             fileUri,
         )
-        // const contractName = await getContractName(
-        //     fileUri,
-        // )
 
         let FILEPATH = fileUri.fsPath;
         var indexStart = Math.max(FILEPATH.lastIndexOf('\\'), FILEPATH.lastIndexOf('/'));
@@ -183,10 +179,10 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
                 let severity : any;
                 severity = json_res.vulnerabilities[ent].level;
                 if (severity === 'error') {
-                    severity = vscode.DiagnosticSeverity.Warning;
+                    severity = vscode.DiagnosticSeverity.Error;
                 }
                 else {
-                    severity = vscode.DiagnosticSeverity.Error;
+                    severity = vscode.DiagnosticSeverity.Warning;
                 }
                 // severity = vscode.DiagnosticSeverity.Error;
                 // let relatedInformation = ''

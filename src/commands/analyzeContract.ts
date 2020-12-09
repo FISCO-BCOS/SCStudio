@@ -1,7 +1,6 @@
 import * as vscode from 'vscode'
 import { getFileContent } from '../utils/getFileContent'
 import { getRequest, postRequest } from '../utils/httpUtils'
-import { getContractName } from '../utils/getContractName'
 import fs = require('fs')
 import { detailItem, detailPrefix, detailSuffix, tablePrefix, tableSuffix, tableItem } from './ReportTemplate';
 
@@ -34,17 +33,14 @@ export async function analyzeContract(
                     d_original.splice(0,d_original.length)
                     const fileContent = await getFileContent(
                         fileUri,
-                    );
-                    let contractName = await getContractName(
-                        fileUri,
-                    );
-                    let lastpos = Math.max(contractName.lastIndexOf('\\'), contractName.lastIndexOf('/'));
-                    if (lastpos !== -1) {
-                        contractName = contractName.substring(lastpos + 1);
-                    }
+                    )
 
-                    let FILEPATH = fileUri.fsPath
-                    // console.log(dc.uri)
+                    let FILEPATH = fileUri.fsPath;
+                    var indexStart = Math.max(FILEPATH.lastIndexOf('\\'), FILEPATH.lastIndexOf('/'));
+                    var indexEnd = FILEPATH.lastIndexOf('.');
+                    var strLen = (indexEnd - indexStart) - 1;
+                    const contractName = FILEPATH.substr(indexStart + 1, strLen);
+                    console.log(FILEPATH, contractName)
 
                     // Windows OS hack
                     if (os.platform() === 'win32') {
@@ -188,10 +184,10 @@ function updateDiagnostics(document: vscode.TextDocument | undefined, collection
                 let severity : any;
                 severity = json_res.vulnerabilities[ent].level;
                 if (severity === 'error') {
-                    severity = vscode.DiagnosticSeverity.Warning;
+                    severity = vscode.DiagnosticSeverity.Error;
                 }
                 else {
-                    severity = vscode.DiagnosticSeverity.Error;
+                    severity = vscode.DiagnosticSeverity.Warning;
                 }
                 // severity = vscode.DiagnosticSeverity.Error;
                 // let relatedInformation = ''
