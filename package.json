@@ -20,7 +20,7 @@
 				"title": "SCStudio: Analyze Contract"
 			},
 			{
-				"command": "scstudio.analyzecontractbutcompile",
+				"command": "scstudio.analyzeContractWithoutCompile",
 				"title": "SCStudio: Analyze Contract Without Compilation"
 			},
 			{

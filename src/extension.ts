@@ -3,7 +3,7 @@
 import * as vscode from 'vscode';
 import { ext } from "./extensionVariables";
 import {analyzeContract} from "./commands/analyzeContract";
-import {analyzeContractButCompile} from "./commands/analyzeContractButCompile";
+import {analyzeContractWithoutCompile} from "./commands/analyzeContractWithoutCompile";
 import {ItemProvider} from "./utils/itemProvider";
 import {getFileContent} from "./utils/getFileContent";
 import {postStringRequest} from "./utils/httpUtils";
@@ -35,8 +35,8 @@ export function activate(context: vscode.ExtensionContext) {
 		analyzeContract(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document);
 	});
 
-	let analyzeSubWithoutCompiler = vscode.commands.registerCommand('scstudio.analyzecontractbutcompile', async () => {
-		analyzeContractButCompile(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document);
+	let analyzeSubWithoutCompiler = vscode.commands.registerCommand('scstudio.analyzeContractWithoutCompile', async () => {
+		analyzeContractWithoutCompile(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document);
 	});
  
 	let disprovideStatement = vscode.commands.registerCommand('scstudio.disablerecommand', () => {

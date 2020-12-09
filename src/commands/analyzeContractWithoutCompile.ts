@@ -9,7 +9,7 @@ import { detailItem, detailPrefix, detailSuffix, tablePrefix, tableSuffix, table
 const os = require('os')
 const { window } = vscode
 
-export async function analyzeContractButCompile(
+export async function analyzeContractWithoutCompile(
     diagnosticCollection: vscode.DiagnosticCollection,
     fileUri: vscode.Uri,
     dc: vscode.TextDocument
