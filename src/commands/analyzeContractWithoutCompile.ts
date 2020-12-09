@@ -104,7 +104,7 @@ export async function analyzeContractWithoutCompile(
             );
         } else {
             vscode.window.showWarningMessage(
-                `SCStudio: found some security issues with your contract. Please check the file vulnerabilities.txt for detail`,
+                `SCStudio: found some security issues with your contract. Please check the file vulnerabilities.html for detail`,
             );
         }
         
