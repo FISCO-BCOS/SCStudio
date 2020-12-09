@@ -1,6 +1,5 @@
 out
 examples
-doc
 node_modules
 .vscode-test/
 *.vsix

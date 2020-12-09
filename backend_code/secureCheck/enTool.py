@@ -308,136 +308,144 @@ def runTools(contractName, limitTime, num) :
 '''
 
 def getName(entID) :
-    if entID == 'ent1' : return 'Function or Variable Default Visibility'
-    elif entID == 'ent2' : return 'Integer Overflow or Underflow'
-    elif entID == 'ent3' : return 'Outdated Compiler Version'
-    elif entID == 'ent4' : return 'Unchecked Call Return Value'
-    elif entID == 'ent5' : return 'Unprotected Ether Withdrawal'
+    switcher = {
+        'ent1': 'Function or Variable Default Visibility',
+        'ent2': 'Integer Overflow or Underflow',
+        'ent3': 'Outdated Compiler Version',
+        'ent4': 'Unchecked Call Return Value',
+        'ent5': 'Unprotected Ether Withdrawal',
 
-    elif entID == 'ent6' : return 'Unprotected SELFDESTRUCT Instruction'
-    elif entID == 'ent7' : return 'Reentrancy'
-    elif entID == 'ent8' : return 'Assert Violation'
-    elif entID == 'ent9' : return 'Use of Deprecated Solidity Functions'
-    elif entID == 'ent10' : return 'Delegatecall to Untrusted Callee'
+        'ent6': 'Unprotected SELFDESTRUCT Instruction',
+        'ent7': 'Reentrancy',
+        'ent8': 'Assert Violation',
+        'ent9': 'Use of Deprecated Solidity Functions',
+        'ent10': 'Delegatecall to Untrusted Callee',
 
-    elif entID == 'ent11' : return 'DoS with Failed Call'
-    elif entID == 'ent12' : return 'Transaction Order Dependence'
-    elif entID == 'ent13' : return 'Authorization through tx.origin'
-    elif entID == 'ent14' : return 'Timestamp Dependence'
-    elif entID == 'ent15' : return 'Signature Malleability'
+        'ent11': 'DoS with Failed Call',
+        'ent12': 'Transaction Order Dependence',
+        'ent13': 'Authorization through tx.origin',
+        'ent14': 'Timestamp Dependence',
+        'ent15': 'Signature Malleability',
 
-    elif entID == 'ent16' : return 'Weak Sources of Randomness from Chain Attributes'
-    elif entID == 'ent17' : return 'Write to Arbitrary Storage Location'
-    elif entID == 'ent18' : return 'Arbitrary Jump with Function Type Variable'
-    elif entID == 'ent19' : return 'Call-stack Depth Limit Exceeding'
-    elif entID == 'ent20' : return 'Contract contains unknown address'
+        'ent16': 'Weak Sources of Randomness from Chain Attributes',
+        'ent17': 'Write to Arbitrary Storage Location',
+        'ent18': 'Arbitrary Jump with Function Type Variable',
+        'ent19': 'Call-stack Depth Limit Exceeding',
+        'ent20': 'Contract contains unknown address',
 
-    elif entID == 'ent21' : return 'Checking for strict balance equality'
-    elif entID == 'ent22' : return 'Use bytes instead of byte[]'
-    elif entID == 'ent23' : return 'Use of call function with no data'
-    elif entID == 'ent24' : return 'Use of return in constructor'
-    elif entID == 'ent25' : return 'Deletion of dynamically-sized storage array'
+        'ent21': 'Checking for strict balance equality',
+        'ent22': 'Use bytes instead of byte[]',
+        'ent23': 'Use of call function with no data',
+        'ent24': 'Use of in constructor',
+        'ent25': 'Deletion of dynamically-sized storage array',
 
-    elif entID == 'ent26' : return 'Deprecated constructions'
-    elif entID == 'ent27' : return 'Multiplication after division'
-    elif entID == 'ent28' : return 'Using continue in the do-while loop'
-    elif entID == 'ent29' : return 'Using approve function of the ERC-20 token standard'
-    elif entID == 'ent30' : return 'Return value is always false'
+        'ent26': 'Deprecated constructions',
+        'ent27': 'Multiplication after division',
+        'ent28': 'Using continue in the do-while loop',
+        'ent29': 'Using approve function of the ERC-20 token standard',
+        'ent30': 'Return value is always false',
 
-    elif entID == 'ent31' : return 'Use of unindexed arguments in ERC-20 standard events'
-    elif entID == 'ent32' : return 'ERC-20 transfer should throw'
-    elif entID == 'ent33' : return 'Extra gas consumption'
-    elif entID == 'ent34' : return 'Incorrect blockhash function'
-    elif entID == 'ent35' : return 'Locked money'
+        'ent31': 'Use of unindexed arguments in ERC-20 standard events',
+        'ent32': 'ERC-20 transfer should throw',
+        'ent33': 'Extra gas consumption',
+        'ent34': 'Incorrect blockhash function',
+        'ent35': 'Locked money',
 
-    elif entID == 'ent36' : return 'Overpowered role'
-    elif entID == 'ent37' : return 'Private modifier'
-    elif entID == 'ent38' : return 'Redundant fallback function'
-    elif entID == 'ent39' : return 'Output overwrites input of assembly CALLs'
-    elif entID == 'ent40' : return 'Send instead of transfer'
+        'ent36': 'Overpowered role',
+        'ent37': 'Private modifier',
+        'ent38': 'Redundant fallback function',
+        'ent39': 'Output overwrites input of assembly CALLs',
+        'ent40': 'Send instead of transfer',
 
-    elif entID == 'ent41' : return 'Incorrect Pure-functions'
-    elif entID == 'ent42' : return 'Incorrect View-functions'
-    elif entID == 'ent43' : return 'ETH transfer inside the loop'
-    elif entID == 'ent44' : return 'Non-strict comparison with zero'
-    elif entID == 'ent45' : return 'Use inline assembly'
+        'ent41': 'Incorrect Pure-functions',
+        'ent42': 'Incorrect View-functions',
+        'ent43': 'ETH transfer inside the loop',
+        'ent44': 'Non-strict comparison with zero',
+        'ent45': 'Use inline assembly',
 
-    elif entID == 'ent46' : return 'Unsafe type inference'
-    elif entID == 'ent47' : return 'Incorrect function signature'
-    elif entID == 'ent48' : return 'Worse readability with revert'
-    elif entID == 'ent49' : return 'Using uintless number'
+        'ent46': 'Unsafe type inference',
+        'ent47': 'Incorrect function signature',
+        'ent48': 'Worse readability with revert',
+        'ent49': 'Using uintless number',
 
-    elif entID == 'ent50' : return 'ArbitraryTransfer problem'
-    elif entID == 'ent51' : return 'GenerateToken problem'
-    elif entID == 'ent52' : return 'DestroyToken problem'
-    elif entID == 'ent53' : return 'FrozeAccount problem'
-    elif entID == 'ent54' : return 'DisableTransfer problem'
+        'ent50': 'ArbitraryTransfer problem',
+        'ent51': 'GenerateToken problem',
+        'ent52': 'DestroyToken problem',
+        'ent53': 'FrozeAccount problem',
+        'ent54': 'DisableTransfer problem'
+    }
+    return switcher.get(entID, "Invalid entID")
+
 
 def getDescription(entID) :
-    if entID == 'ent1' : return 'Functions or variables that do not have a visibility type specified are public by default. This can lead to a vulnerability if a developer forgot to set the visibility and a malicious user is able to make unauthorized or unintended state changes.'
-    elif entID == 'ent2' : return 'An overflow/underflow happens when an arithmetic operation reaches the maximum or minimum size of a type.'
-    elif entID == 'ent3' : return 'Using an outdated compiler version can be problematic especially if there are publicly disclosed bugs and issues that affect the current compiler version.'
-    elif entID == 'ent4' : return 'The return value of a message call is not checked. Execution will resume even if the called contract throws an exception. If the call fails accidentally or an attacker forces the call to fail, this may cause unexpected behaviour in the subsequent program logic.'
-    elif entID == 'ent5' : return 'Due to missing or insufficient access controls, malicious parties can withdraw some or all Ether from the contract account.'
+    switcher = {
+        'ent1': 'Functions or variables that do not have a visibility type specified are public by default. This can lead to a vulnerability if a developer forgot to set the visibility and a malicious user is able to make unauthorized or unintended state changes.',
+        'ent2': 'An overflow/underflow happens when an arithmetic operation reaches the maximum or minimum size of a type.',
+        'ent3': 'Using an outdated compiler version can be problematic especially if there are publicly disclosed bugs and issues that affect the current compiler version.',
+        'ent4': 'The return value of a message call is not checked. Execution will resume even if the called contract throws an exception. If the call fails accidentally or an attacker forces the call to fail, this may cause unexpected behaviour in the subsequent program logic.',
+        'ent5': 'Due to missing or insufficient access controls, malicious parties can withdraw some or all Ether from the contract account.',
 
-    elif entID == 'ent6' : return 'Due to missing or insufficient access controls, malicious parties can self-destruct the contract.'
-    elif entID == 'ent7' : return 'One of the major dangers of calling external contracts is that they can take over the control flow. In the reentrancy attack (a.k.a. recursive call attack), a malicious contract calls back into the calling contract before the first invocation of the function is finished. This may cause the different invocations of the function to interact in undesirable ways.'
-    elif entID == 'ent8' : return 'Properly functioning code should never reach a failing assert statement.'
-    elif entID == 'ent9' : return 'Several functions and operators in Solidity are deprecated. Using them leads to reduced code quality. With new major versions of the Solidity compiler, deprecated functions and operators may result in side effects and compile errors.'
-    elif entID == 'ent10' : return 'Calling into untrusted contracts is very dangerous, as the code at the target address can change any storage values of the caller and has full control over the caller\'s balance.'
+        'ent6': 'Due to missing or insufficient access controls, malicious parties can self-destruct the contract.',
+        'ent7': 'One of the major dangers of calling external contracts is that they can take over the control flow. In the reentrancy attack (a.k.a. recursive call attack), a malicious contract calls back into the calling contract before the first invocation of the function is finished. This may cause the different invocations of the function to interact in undesirable ways.',
+        'ent8': 'Properly functioning code should never reach a failing assert statement.',
+        'ent9': 'Several functions and operators in Solidity are deprecated. Using them leads to reduced code quality. With new major versions of the Solidity compiler, deprecated functions and operators may result in side effects and compile errors.',
+        'ent10': 'Calling into untrusted contracts is very dangerous, as the code at the target address can change any storage values of the caller and has full control over the caller\'s balance.',
 
-    elif entID == 'ent11' : return 'External calls can fail accidentally or deliberately, which can cause a DoS condition in the contract.'
-    elif entID == 'ent12' : return 'A race condition vulnerability occurs when code depends on the order of the transactions submitted to it.'
-    elif entID == 'ent13' : return 'tx.origin is a global variable in Solidity which returns the address of the account that sent the transaction. Using the variable for authorization could make a contract vulnerable if an authorized account calls into a malicious contract.'
-    elif entID == 'ent14' : return 'Developers can\'t rely on the preciseness of the provided timestamp.'
-    elif entID == 'ent15' : return 'A system that performs signature verification on contract level might be susceptible to attacks if the signature is part of the signed message hash. Valid signatures could be created by a malicious user to replay previously signed messages.'
+        'ent11': 'External calls can fail accidentally or deliberately, which can cause a DoS condition in the contract.',
+        'ent12': 'A race condition vulnerability occurs when code depends on the order of the transactions submitted to it.',
+        'ent13': 'tx.origin is a global variable in Solidity which returns the address of the account that sent the transaction. Using the variable for authorization could make a contract vulnerable if an authorized account calls into a malicious contract.',
+        'ent14': 'Developers can\'t rely on the preciseness of the provided timestamp.',
+        'ent15': 'A system that performs signature verification on contract level might be susceptible to attacks if the signature is part of the signed message hash. Valid signatures could be created by a malicious user to replay previously signed messages.',
 
-    elif entID == 'ent16' : return 'Uable to create a strong enough source of randomness.'
-    elif entID == 'ent17' : return 'The contract is responsible for ensuring that only authorized user or contract accounts may write to sensitive storage locations. If an attacker is able to write to arbitrary storage locations of a contract, the authorization checks may easily be circumvented. '
-    elif entID == 'ent18' : return 'The problem arises when a user has the ability to arbitrarily change the function type variable and thus execute random code instructions. '
-    elif entID == 'ent19' : return 'The Ethereum Virtual Machine implementation limits the call-stack\'s depth to 1024 frames. The call-stack\'s depth increases by one if a contract calls another via the send or call instruction. This opens an attack vector to deliberately cause the send instruction to fail.'
-    elif entID == 'ent20' : return 'The contract contains an unknown address. This address might be used for some malicious activity.'
+        'ent16': 'Uable to create a strong enough source of randomness.',
+        'ent17': 'The contract is responsible for ensuring that only authorized user or contract accounts may write to sensitive storage locations. If an attacker is able to write to arbitrary storage locations of a contract, the authorization checks may easily be circumvented. ',
+        'ent18': 'The problem arises when a user has the ability to arbitrarily change the function type variable and thus execute random code instructions. ',
+        'ent19': 'The Ethereum Virtual Machine implementation limits the call-stack\'s depth to 1024 frames. The call-stack\'s depth increases by one if a contract calls another via the send or call instruction. This opens an attack vector to deliberately cause the send instruction to fail.',
+        'ent20': 'The contract contains an unknown address. This address might be used for some malicious activity.',
 
-    elif entID == 'ent21' : return 'An adversary can forcibly send ether to any address via selfdestruct() or by mining.'
-    elif entID == 'ent22' : return 'For lower gas consumption, byte[] is unsafe.'
-    elif entID == 'ent23' : return 'Use of low-level call function with no arguments provided.'
-    elif entID == 'ent24' : return 'Return statement is used in the contract\'s constructor. With return the process of deployment will differ from the intuitive one. For instance, deployed bytecode may not include functions implemented in the source.'
-    elif entID == 'ent25' : return 'Applying delete or .length = 0 to dynamically-sized storage arrays may lead to Out-of-Gas exception.'
+        'ent21': 'An adversary can forcibly send ether to any address via selfdestruct() or by mining.',
+        'ent22': 'For lower gas consumption, byte[] is unsafe.',
+        'ent23': 'Use of low-level call function with no arguments provided.',
+        'ent24': 'Return statement is used in the contract\'s constructor. With return the process of deployment will differ from the intuitive one. For instance, deployed bytecode may not include functions implemented in the source.',
+        'ent25': 'Applying delete or .length = 0 to dynamically-sized storage arrays may lead to Out-of-Gas exception.',
 
-    elif entID == 'ent26' : return 'Deprecated constructions: years, sha3, suicide, throw and constant functions.Use keccak256 instead of sha3.'
-    elif entID == 'ent27' : return 'Solidity operates only with integers. Thus, if the division is done before the  multiplication, the rounding errors can increase dramatically.'
-    elif entID == 'ent28' : return 'Prior to version 0.5.0, Solidity compiler handles continue inside do-while loop incorrectly: it ignores while condition.'
-    elif entID == 'ent29' : return 'The approve function of ERC-20 is vulnerable. Using front-running attack one can spend approved tokens before change of allowance value.'
-    elif entID == 'ent30' : return 'The transfer, transferFrom or approve functions do not return true for any values of input parameters.'
+        'ent26': 'Deprecated constructions: years, sha3, suicide, throw and constant functions.Use keccak256 instead of sha3.',
+        'ent27': 'Solidity operates only with integers. Thus, if the division is done before the  multiplication, the rounding errors can increase dramatically.',
+        'ent28': 'Prior to version 0.5.0, Solidity compiler handles continue inside do-while loop incorrectly: it ignores while condition.',
+        'ent29': 'The approve function of ERC-20 is vulnerable. Using front-running attack one can spend approved tokens before change of allowance value.',
+        'ent30': 'The transfer, transferFrom or approve functions do not return true for any values of input parameters.',
 
-    elif entID == 'ent31' : return 'Address arguments of Transfer and Approve events of ERC-20 token standard must be indexed.'
-    elif entID == 'ent32' : return 'Functions of ERC-20 Token Standard should throw in special cases: a) transfer should throw if the _from account balance does not have enough tokens to spend; b) transferFrom should throw unless the _from account has deliberately authorized the sender of the message via some mechanism.'
-    elif entID == 'ent33' : return 'State variable, .balance, or .length of non-memory array is used in the condition of for or while loop. In this case, every iteration of loop consumes extra gas.'
-    elif entID == 'ent34' : return 'Blockhash function returns a non-zero value only for 256 last blocks. Besides, it always returns 0 for the current block.'
-    elif entID == 'ent35' : return 'Contracts programmed to receive ether should implement a way to withdraw it.'
+        'ent31': 'Address arguments of Transfer and Approve events of ERC-20 token standard must be indexed.',
+        'ent32': 'Functions of ERC-20 Token Standard should throw in special cases: a) transfer should throw if the _from account balance does not have enough tokens to spend; b) transferFrom should throw unless the _from account has deliberately authorized the sender of the message via some mechanism.',
+        'ent33': 'State variable, .balance, or .length of non-memory array is used in the condition of for or while loop. In this case, every iteration of loop consumes extra gas.',
+        'ent34': 'Blockhash function returns a non-zero value only for 256 last blocks. Besides, it always returns 0 for the current block.',
+        'ent35': 'Contracts programmed to receive ether should implement a way to withdraw it.',
 
-    elif entID == 'ent36' : return 'This function is callable only from one address. Therefore, the system depends heavily on this address. In this case, there are scenarios that may lead to undesirable consequences for investors, e.g. if the private key of this address becomes compromised.'
-    elif entID == 'ent37' : return 'Contrary to a popular misconception, the private modifier does not make a variable invisible. Miners have access to all contracts\' code and data.'
-    elif entID == 'ent38' : return 'The payment rejection fallback is redundant.'
-    elif entID == 'ent39' : return 'Dangerous use of inline assembly instruction of CALL family, which overwrites the input with the output.'
-    elif entID == 'ent40' : return 'The send function is called inside checks instead of using transfer.'
+        'ent36': 'This function is callable only from one address. Therefore, the system depends heavily on this address. In this case, there are scenarios that may lead to undesirable consequences for investors, e.g. if the private key of this address becomes compromised.',
+        'ent37': 'Contrary to a popular misconception, the private modifier does not make a variable invisible. Miners have access to all contracts\' code and data.',
+        'ent38': 'The payment rejection fallback is redundant.',
+        'ent39': 'Dangerous use of inline assembly instruction of CALL family, which overwrites the input with the output.',
+        'ent40': 'The send function is called inside checks instead of using transfer.',
 
-    elif entID == 'ent41' : return 'In Solidity, functions that do not read from the state or modify it can be declared as pure.'
-    elif entID == 'ent42' : return 'In Solidity, functions that do not read from the state or modify it can be declared as view.'
-    elif entID == 'ent43' : return 'ETH is transferred in a loop. If at least one address cannot receive ETH (e.g. it is a contract with default fallback function), the whole transaction will be reverted.'
-    elif entID == 'ent44' : return 'Variables of uint type cannot be negative. Thus, comparing uint variable with zero (greater than or equal) is redundant. Also, it may lead to an underflow issue. Moreover, comparison with zero used in for-loop condition results in an infinite loop.'
-    elif entID == 'ent45' : return 'Inline assembly is a way to access the Ethereum Virtual Machine at a low level. This discards several important safety features of Solidity.'
+        'ent41': 'In Solidity, functions that do not read from the state or modify it can be declared as pure.',
+        'ent42': 'In Solidity, functions that do not read from the state or modify it can be declared as view.',
+        'ent43': 'ETH is transferred in a loop. If at least one address cannot receive ETH (e.g. it is a contract with default fallback function), the whole transaction will be reverted.',
+        'ent44': 'Variables of uint type cannot be negative. Thus, comparing uint variable with zero (greater than or equal) is redundant. Also, it may lead to an underflow issue. Moreover, comparison with zero used in for-loop condition results in an infinite loop.',
+        'ent45': 'Inline assembly is a way to access the Ethereum Virtual Machine at a low level. This discards several important safety features of Solidity.',
 
-    elif entID == 'ent46' : return 'May cause overflow error.'
-    elif entID == 'ent47' : return 'In Solidity, the function signature is defined as the canonical expression of the basic prototype without data location specifier, i.e. the function name with the parenthesised list of parameter types. Parameter types are split by a single comma - no spaces are used. '
-    elif entID == 'ent48' : return 'Using the construction \'\'if (condition) {revert();}\'\' instead of \'\'require(condition);\'\''
-    elif entID == 'ent49' : return 'Vyper allows you to use unit label to either uint256, int128, or decimal type. This feature is implemented to increase code readability and security. Use of as_unitless_number() function can endanger contract security.'
+        'ent46': 'May cause overflow error.',
+        'ent47': 'In Solidity, the function signature is defined as the canonical expression of the basic prototype without data location specifier, i.e. the function name with the parenthesised list of parameter types. Parameter types are split by a single comma - no spaces are used. ',
+        'ent48': 'Using the construction \'\'if (condition) {revert();}\'\' instead of \'\'require(condition);\'\'',
+        'ent49': 'Vyper allows you to use unit label to either uint256, int128, or decimal type. This feature is implemented to increase code readability and security. Use of as_unitless_number() function can endanger contract security.',
 
-    elif entID == 'ent50' : return 'When a hacker gets access to controlling this function, he can transfer tokens from one account to another one arbitrarily.'
-    elif entID == 'ent51' : return 'When a hacker gets access to controlling this function, he can generate any amount of tokens.'
-    elif entID == 'ent52' : return 'When a hacker gets access to controlling this function, he can destory any amount of tokens.'
-    elif entID == 'ent53' : return 'When a hacker gets access to controlling this function, he can freeze any account.'
-    elif entID == 'ent54' : return 'When a hacker gets access to controlling this function, he can disable all the transferations.'
+        'ent50': 'When a hacker gets access to controlling this function, he can transfer tokens from one account to another one arbitrarily.',
+        'ent51': 'When a hacker gets access to controlling this function, he can generate any amount of tokens.',
+        'ent52': 'When a hacker gets access to controlling this function, he can destory any amount of tokens.',
+        'ent53': 'When a hacker gets access to controlling this function, he can freeze any account.',
+        'ent54': 'When a hacker gets access to controlling this function, he can disable all the transferations.'
+    }
+    return switcher.get(entID, "Invalid entID")
+
 
 def getSWC(entID) :
     if entID == 'ent1' : return '100'
@@ -464,138 +472,146 @@ def getSWC(entID) :
 
     else : return ''
 
+
 def getAdvice(entID) :
-    if entID == 'ent1' : return 'Functions can be specified as being external, public, internal or private. It is recommended to make a conscious decision on which visibility type is appropriate for a function. This can dramatically reduce the attack surface of a contract system.'
-    elif entID == 'ent2' : return 'It is recommended to use vetted safe math libraries for arithmetic operations consistently throughout the smart contract system.'
-    elif entID == 'ent3' : return 'It is recommended to use a recent version of the Solidity compiler.'
-    elif entID == 'ent4' : return 'If you choose to use low-level call methods, make sure to handle the possibility that the call will fail by checking the return value.'
-    elif entID == 'ent5' : return 'Implement controls so withdrawals can only be triggered by authorized parties or according to the specs of the smart contract system.'
+    switcher = {
+        'ent1': 'Functions can be specified as being external, public, internal or private. It is recommended to make a conscious decision on which visibility type is appropriate for a function. This can dramatically reduce the attack surface of a contract system.',
+        'ent2': 'It is recommended to use vetted safe math libraries for arithmetic operations consistently throughout the smart contract system.',
+        'ent3': 'It is recommended to use a recent version of the Solidity compiler.',
+        'ent4': 'If you choose to use low-level call methods, make sure to handle the possibility that the call will fail by checking the return value.',
+        'ent5': 'Implement controls so withdrawals can only be triggered by authorized parties or according to the specs of the smart contract system.',
 
-    elif entID == 'ent6' : return 'Consider removing the self-destruct functionality unless it is absolutely required. If there is a valid use-case, it is recommended to implement a multisig scheme so that multiple parties must approve the self-destruct action.'
-    elif entID == 'ent7' : return 'Use transfer() instead of contract.call() to transfer Ether to untrusted addresses. And when using low-level calls, make sure all internal state changes are performed before the call is executed.'
-    elif entID == 'ent8' : return 'Consider whether the condition checked in the assert() is actually an invariant. If not, replace the assert() statement with a require() statement. If the exception is indeed caused by unexpected behaviour of the code, fix the underlying bug(s) that allow the assertion to be violated.'
-    elif entID == 'ent9' : return 'Solidity provides alternatives to the deprecated constructions. Most of them are aliases, thus replacing old constructions will not break current behavior.'
-    elif entID == 'ent10' : return 'Use delegatecall with caution and make sure to never call into untrusted contracts. If the target address is derived from user input ensure to check it against a whitelist of trusted contracts.'
+        'ent6': 'Consider removing the self-destruct functionality unless it is absolutely required. If there is a valid use-case, it is recommended to implement a multisig scheme so that multiple parties must approve the self-destruct action.',
+        'ent7': 'Use transfer() instead of contract.call() to transfer Ether to untrusted addresses. And when using low-level calls, make sure all internal state changes are performed before the call is executed.',
+        'ent8': 'Consider whether the condition checked in the assert() is actually an invariant. If not, replace the assert() statement with a require() statement. If the exception is indeed caused by unexpected behaviour of the code, fix the underlying bug(s) that allow the assertion to be violated.',
+        'ent9': 'Solidity provides alternatives to the deprecated constructions. Most of them are aliases, thus replacing old constructions will not break current behavior.',
+        'ent10': 'Use delegatecall with caution and make sure to never call into untrusted contracts. If the target address is derived from user input ensure to check it against a whitelist of trusted contracts.',
 
-    elif entID == 'ent11' : return 'Implement the contract logic to handle failed calls.'
-    elif entID == 'ent12' : return 'From the user perspective it is possible to mediate the ERC20 race condition by setting approvals to zero before changing them.'
-    elif entID == 'ent13' : return 'If you want to use tx.origin for authorization, please use msg.sender instead.'
-    elif entID == 'ent14' : return 'Use block number or external source of timestamp via oracles.'
-    elif entID == 'ent15' : return 'A signature should never be included into a signed message hash to check if previously messages have been processed by the contract.'
+        'ent11': 'Implement the contract logic to handle failed calls.',
+        'ent12': 'From the user perspective it is possible to mediate the ERC20 race condition by setting approvals to zero before changing them.',
+        'ent13': 'If you want to use tx.origin for authorization, please use msg.sender instead.',
+        'ent14': 'Use block number or external source of timestamp via oracles.',
+        'ent15': 'A signature should never be included into a signed message hash to check if previously messages have been processed by the contract.',
 
-    elif entID == 'ent16' : return 'Using Bitcoin block hashes, as they are more expensive to mine.'
-    elif entID == 'ent17' : return 'As a general advice, given that all data structures share the same storage (address) space, one should make sure that writes to one data structure cannot inadvertently overwrite entries of another data structure.'
-    elif entID == 'ent18' : return 'The use of assembly should be minimal. A developer should not allow a user to assign arbitrary values to function type variables.'
-    elif entID == 'ent19' : return 'Specifically, an attacker can prepare a contract to call itself 1023 times before sending a transaction to KoET to claim the throne from the current king. Thus, the attacker ensures that the call-stack\'s depth of KoET reaches 1024, causing the send instruction in Line 15 to fail. As the result, the current king will not receive any payment.'
-    elif entID == 'ent20' : return 'It is required to check the address. Also, it is required to check the code of the called contract for vulnerabilities.'
+        'ent16': 'Using Bitcoin block hashes, as they are more expensive to mine.',
+        'ent17': 'As a general advice, given that all data structures share the same storage (address) space, one should make sure that writes to one data structure cannot inadvertently overwrite entries of another data structure.',
+        'ent18': 'The use of assembly should be minimal. A developer should not allow a user to assign arbitrary values to function type variables.',
+        'ent19': 'Specifically, an attacker can prepare a contract to call itself 1023 times before sending a transaction to KoET to claim the throne from the current king. Thus, the attacker ensures that the call-stack\'s depth of KoET reaches 1024, causing the send instruction in Line 15 to fail. As the result, the current king will not receive any payment.',
+        'ent20': 'It is required to check the address. Also, it is required to check the code of the called contract for vulnerabilities.',
 
-    elif entID == 'ent21' : return 'Use non-strict inequality.'
-    elif entID == 'ent22' : return 'Use bytes instead of byte[].'
-    elif entID == 'ent23' : return 'In this case, transfer or send function call is more secure. Another option is to implement the desired functionality in the separate public function of the target contract. Nevertheless, if use of call function is necessary due to the target contract design, gas limit should be added .gas().'
-    elif entID == 'ent24' : return 'Do not use return in the contract\'s constructor in order to increase code readability and transparency unless you clearly understand this vulnerability. Generally, it is not safe to use smart contracts that have assembly in the constructor.'
-    elif entID == 'ent25' : return 'Restrict adding too many elements into storage array. Otherwise, allow partial deletion of array\'s elements.'
+        'ent21': 'Use non-strict inequality.',
+        'ent22': 'Use bytes instead of byte[].',
+        'ent23': 'In this case, transfer or send function call is more secure. Another option is to implement the desired functionality in the separate public function of the target contract. Nevertheless, if use of call function is necessary due to the target contract design, gas limit should be added .gas().',
+        'ent24': 'Do not use return in the contract\'s constructor in order to increase code readability and transparency unless you clearly understand this vulnerability. Generally, it is not safe to use smart contracts that have assembly in the constructor.',
+        'ent25': 'Restrict adding too many elements into storage array. Otherwise, allow partial deletion of array\'s elements.',
 
-    elif entID == 'ent26' : return 'Use selfdestruct instead of suicide. Use revert() instead of throw. Use view instead of constant for functions. Use days instead of years.'
-    elif entID == 'ent27' : return 'Carefully use * after / .'
-    elif entID == 'ent28' : return 'Do not use continue instruction in the do-while loop.'
-    elif entID == 'ent29' : return 'Only use the approve function of the ERC-20 standard to change allowed amount to 0 or from 0 (wait till transaction is mined and approved).'
-    elif entID == 'ent30' : return 'It is required to return true, if the function was successful.'
+        'ent26': 'Use selfdestruct instead of suicide. Use revert() instead of throw. Use view instead of constant for functions. Use days instead of years.',
+        'ent27': 'Carefully use * after / .',
+        'ent28': 'Do not use continue instruction in the do-while loop.',
+        'ent29': 'Only use the approve function of the ERC-20 standard to change allowed amount to 0 or from 0 (wait till transaction is mined and approved).',
+        'ent30': 'It is required to return true, if the function was successful.',
 
-    elif entID == 'ent31' : return 'Use indexed events\' arguments, as stated in ERC-20 Token Standard.'
-    elif entID == 'ent32' : return 'The ERC20 standard recommends throwing exceptions in functions transfer and transferFrom.'
-    elif entID == 'ent33' : return 'If state variable, .balance, or .length is used several times, holding its value in a local variable is more gas efficient. If .length of calldata-array is placed into local variable, the optimisation will be less significant.'
-    elif entID == 'ent34' : return ''
-    elif entID == 'ent35' : return 'Call transfer (recommended), send or call.value at least once.'
+        'ent31': 'Use indexed events\' arguments, as stated in ERC-20 Token Standard.',
+        'ent32': 'The ERC20 standard recommends throwing exceptions in functions transfer and transferFrom.',
+        'ent33': 'If state variable, .balance, or .length is used several times, holding its value in a local variable is more gas efficient. If .length of calldata-array is placed into local variable, the optimisation will be less significant.',
+        'ent34': '',
+        'ent35': 'Call transfer (recommended), send or call.value at least once.',
 
-    elif entID == 'ent36' : return ''
-    elif entID == 'ent37' : return ''
-    elif entID == 'ent38' : return 'Delete it.'
-    elif entID == 'ent39' : return ''
-    elif entID == 'ent40' : return 'The recommended way to perform checked ether payments is addr.transfer(x), which automatically throws an exception if the transfer is unsuccessful.'
+        'ent36': '',
+        'ent37': '',
+        'ent38': 'Delete it.',
+        'ent39': '',
+        'ent40': 'The recommended way to perform checked ether payments is addr.transfer(x), which automatically throws an exception if the transfer is unsuccessful.',
 
-    elif entID == 'ent41' : return 'Use other function modifiers instead.'
-    elif entID == 'ent42' : return 'Use other function modifiers instead.'
-    elif entID == 'ent43' : return ''
-    elif entID == 'ent44' : return 'Delete it.'
-    elif entID == 'ent45' : return ''
+        'ent41': 'Use other function modifiers instead.',
+        'ent42': 'Use other function modifiers instead.',
+        'ent43': '',
+        'ent44': 'Delete it.',
+        'ent45': '',
 
-    elif entID == 'ent46' : return 'Use correct integer type instead of var.'
-    elif entID == 'ent47' : return 'Use uint256 and int256 instead of uint or int.'
-    elif entID == 'ent48' : return 'Use require for better code readability.'
-    elif entID == 'ent49' : return 'Do not use as_unitless_number() function, use uint labels instead.'
+        'ent46': 'Use correct integer type instead of var.',
+        'ent47': 'Use uint256 and int256 instead of uint or int.',
+        'ent48': 'Use require for better code readability.',
+        'ent49': 'Do not use as_unitless_number() function, use uint labels instead.',
 
-    elif entID == 'ent50' : return ''
-    elif entID == 'ent51' : return ''
-    elif entID == 'ent52' : return ''
-    elif entID == 'ent53' : return ''
-    elif entID == 'ent54' : return ''
+        'ent50': '',
+        'ent51': '',
+        'ent52': '',
+        'ent53': '',
+        'ent54': ''
+    }
+    return switcher.get(entID, "Invalid entID")
 
 
 def getLevel(entID) :
-    if entID == 'ent1' : return 'warning'
-    elif entID == 'ent2' : return 'error'
-    elif entID == 'ent3' : return 'warning'
-    elif entID == 'ent4' : return 'error'
-    elif entID == 'ent5' : return 'error'
+    switcher = {
+        'ent1': 'warning',
+        'ent2': 'error',
+        'ent3': 'warning',
+        'ent4': 'error',
+        'ent5': 'error',
 
-    elif entID == 'ent6' : return 'error'
-    elif entID == 'ent7' : return 'error'
-    elif entID == 'ent8' : return 'error'
-    elif entID == 'ent9' : return 'warning'
-    elif entID == 'ent10' : return 'error'
+        'ent6': 'error',
+        'ent7': 'error',
+        'ent8': 'error',
+        'ent9': 'warning',
+        'ent10': 'error',
 
-    elif entID == 'ent11' : return 'error'
-    elif entID == 'ent12' : return 'error'
-    elif entID == 'ent13' : return 'warning'
-    elif entID == 'ent14' : return 'error'
-    elif entID == 'ent15' : return 'error'
+        'ent11': 'error',
+        'ent12': 'error',
+        'ent13': 'warning',
+        'ent14': 'error',
+        'ent15': 'error',
 
-    elif entID == 'ent16' : return 'error'
-    elif entID == 'ent17' : return 'error'
-    elif entID == 'ent18' : return 'error'
-    elif entID == 'ent19' : return 'error'
-    elif entID == 'ent20' : return 'warning'
+        'ent16': 'error',
+        'ent17': 'error',
+        'ent18': 'error',
+        'ent19': 'error',
+        'ent20': 'warning',
 
-    elif entID == 'ent21' : return 'warning'
-    elif entID == 'ent22' : return 'warning'
-    elif entID == 'ent23' : return 'warning'
-    elif entID == 'ent24' : return 'error'
-    elif entID == 'ent25' : return 'warning'
+        'ent21': 'warning',
+        'ent22': 'warning',
+        'ent23': 'warning',
+        'ent24': 'error',
+        'ent25': 'warning',
 
-    elif entID == 'ent26' : return 'warning'
-    elif entID == 'ent27' : return 'warning'
-    elif entID == 'ent28' : return 'warning'
-    elif entID == 'ent29' : return 'warning'
-    elif entID == 'ent30' : return 'warning'
+        'ent26': 'warning',
+        'ent27': 'warning',
+        'ent28': 'warning',
+        'ent29': 'warning',
+        'ent30': 'warning',
 
-    elif entID == 'ent31' : return 'warning'
-    elif entID == 'ent32' : return 'error'
-    elif entID == 'ent33' : return 'warning'
-    elif entID == 'ent34' : return 'warning'
-    elif entID == 'ent35' : return 'warning'
+        'ent31': 'warning',
+        'ent32': 'error',
+        'ent33': 'warning',
+        'ent34': 'warning',
+        'ent35': 'warning',
 
-    elif entID == 'ent36' : return 'warning'
-    elif entID == 'ent37' : return 'warning'
-    elif entID == 'ent38' : return 'warning'
-    elif entID == 'ent39' : return 'warning'
-    elif entID == 'ent40' : return 'warning'
+        'ent36': 'warning',
+        'ent37': 'warning',
+        'ent38': 'warning',
+        'ent39': 'warning',
+        'ent40': 'warning',
 
-    elif entID == 'ent41' : return 'warning'
-    elif entID == 'ent42' : return 'warning'
-    elif entID == 'ent43' : return 'warning'
-    elif entID == 'ent44' : return 'warning'
-    elif entID == 'ent45' : return 'warning'
+        'ent41': 'warning',
+        'ent42': 'warning',
+        'ent43': 'warning',
+        'ent44': 'warning',
+        'ent45': 'warning',
 
-    elif entID == 'ent46' : return 'warning'
-    elif entID == 'ent47' : return 'warning'
-    elif entID == 'ent48' : return 'warning'
-    elif entID == 'ent49' : return 'warning'
+        'ent46': 'warning',
+        'ent47': 'warning',
+        'ent48': 'warning',
+        'ent49': 'warning',
 
-    elif entID == 'ent50' : return 'error'
-    elif entID == 'ent51' : return 'error'
-    elif entID == 'ent52' : return 'error'
-    elif entID == 'ent53' : return 'error'
-    elif entID == 'ent54' : return 'error'
+        'ent50': 'error',
+        'ent51': 'error',
+        'ent52': 'error',
+        'ent53': 'error',
+        'ent54': 'error'
+    }
+    return switcher.get(entID, "Invalid entID")
+
 
 class Logger(object):
     def __init__(self, filename="Default.log"):

@@ -25,6 +25,7 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
     
     let htmlPath = FILEPATH;
     let datetime = new Date();
+    // add leading zero for single digit number
     var y = datetime.getFullYear();
     var m = datetime.getMonth() + 1;
     var d = datetime.getDate();
@@ -35,7 +36,7 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
     let reportFolder = FILEPATH.substring(0, FILEPATH.lastIndexOf('/')) + '/reports/';
     FILEPATH = reportFolder + 'vulnerabilitiesInfo_' + dateString + '.txt';
     htmlPath = reportFolder + 'vulnerabilitiesReport_' + dateString + '.html';
-
+    
     if (document) {
         vscode.languages.getDiagnostics(document.uri).slice(1,1);
         obj = JSON.parse(JSON.stringify(obj.text));

@@ -38,10 +38,15 @@ Secsolidity implements a highlight feature for solidity language.
 ## Usage
 
 The current version of Secsolidity is still under development. You can only use it by cloning the repository and run the extension in debugging mode. You can use this tool by the followint commands:
-```
+```shell
 git clone https://github.com/fCorleone/SecSolidity.git
 cd SecSolidity
+# install dependency-package
 npm install
+# install dependency-extension
+code --install-extension philhindle.errorlens
+code --install-extension JuanBlanco.solidity
+# launch vscode
 code .
 ```
 After opening the repository in VScode, press F5 to debug and open your workspace which contains the solidity files.
