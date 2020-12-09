@@ -3,9 +3,9 @@ import csv
 import subprocess
 import functools
 
-rootPath = '/home/renardbebe/Desktop/SmartIDE/SCCC/backdoorDetect/'
+rootPath = './SmartIDE/SCCC/backdoorDetect/'
 
-contractPath = rootPath + 'test2/'
+contractPath = rootPath + 'test/'
 tmpPath = rootPath + 'tmp/'
 outputPath = rootPath + 'output/'
 

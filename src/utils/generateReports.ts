@@ -23,7 +23,6 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
     let diagnostics: vscode.Diagnostic[] = [];
     let FILEPATH = checkPlatform(fileUri.fsPath);
     
-    // console.log('FILEPATH  '+FILEPATH)
     let htmlPath = FILEPATH;
     let datetime = new Date();
     var y = datetime.getFullYear();
@@ -36,8 +35,8 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
     let reportFolder = FILEPATH.substring(0, FILEPATH.lastIndexOf('/')) + '/reports/';
     FILEPATH = reportFolder + 'vulnerabilitiesInfo_' + dateString + '.txt';
     htmlPath = reportFolder + 'vulnerabilitiesReport_' + dateString + '.html';
+
     if (document) {
-        // console.log(document.uri)
         vscode.languages.getDiagnostics(document.uri).slice(1,1);
         obj = JSON.parse(JSON.stringify(obj.text));
         let json_res = JSON.parse(obj);
@@ -75,8 +74,6 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
                 tableItemHtml = tableItemHtml.replace(/!LEVEL!/, respos.level);
                 tableHtml = tableHtml+tableItemHtml;
           
-                // console.log(details)
-                // console.log(FILEPATH)
                 fs.writeFile(FILEPATH, details, function (err) {
                     if (err)
                         throw err;

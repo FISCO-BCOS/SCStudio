@@ -19,7 +19,6 @@ export class ItemProvider implements vscode.CompletionItemProvider{
 			timeout: 60000
 		};
 		let rebody = urllib.request(url, options).data;
-		// console.log('rebody:' + rebody);
 		var asciis = rebody;
 		var resString = "";
 	

@@ -5,7 +5,6 @@ export async function postRequest(url: string, data: object) {
         superagent.post(url)
             .send(data)
             .end((err: Error, res: superagent.Response) => {
-                // console.log('end url:' + url);
                 if (!err) {
                     resolve(res);
                 } else{
@@ -22,7 +21,6 @@ export async function postStringRequest(url: string, data: string) {
         superagent.post(url)
             .send(data)
             .end((err: Error, res: superagent.Response) => {
-                // console.log('end url:' + url);
                 if (!err) {
                     resolve(res);
                 } else{
