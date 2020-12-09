@@ -7,6 +7,19 @@ import { detailItem, detailPrefix, detailSuffix, tablePrefix, tableSuffix, table
 const os = require('os')
 const { window } = vscode
 
+// Windows OS hack
+function checkPlatform(
+    FILEPATH: string
+): string {
+    if (os.platform() === 'win32') {
+        FILEPATH = FILEPATH.replace(/\\/g, '/')
+        if (FILEPATH.charAt(0) === '/') {
+            FILEPATH = FILEPATH.substr(1)
+        }
+    }
+    return FILEPATH;
+}
+
 export async function analyzeContract(
     diagnosticCollection: vscode.DiagnosticCollection,
     fileUri: vscode.Uri,
@@ -42,13 +55,7 @@ export async function analyzeContract(
                     const contractName = FILEPATH.substr(indexStart + 1, strLen);
                     console.log(FILEPATH, contractName)
 
-                    // Windows OS hack
-                    if (os.platform() === 'win32') {
-                        FILEPATH = FILEPATH.replace(/\\/g, '/')
-                        if (FILEPATH.charAt(0) === '/') {
-                            FILEPATH = FILEPATH.substr(1)
-                        }
-                    }
+                    FILEPATH = checkPlatform(FILEPATH);
 
                     // Remove file name from path
                     const rootPath = FILEPATH.substring(
@@ -113,14 +120,8 @@ export async function analyzeContract(
 
 function updateDiagnostics(document: vscode.TextDocument | undefined, collection: vscode.DiagnosticCollection, obj:any, fileUri:any): void {
     let diagnostics: vscode.Diagnostic[] = [];
-    let FILEPATH = fileUri.fsPath;
+    let FILEPATH = checkPlatform(fileUri.fsPath);
     
-    if (os.platform() === 'win32') {
-        FILEPATH = FILEPATH.replace(/\\/g, '/')
-        if (FILEPATH.charAt(0) === '/') {
-            FILEPATH = FILEPATH.substr(1)
-        }
-    }
     // console.log('FILEPATH  '+FILEPATH)
     let htmlPath = FILEPATH;
     let datetime = new Date();
