@@ -32,7 +32,8 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
     var h = datetime.getHours();
     var mm = datetime.getMinutes();
     var s = datetime.getSeconds();
-    let dateString = y.toString() + m.toString() + d.toString() + '_' + h.toString() + mm.toString() + s.toString();
+    let dateString = y.toString().padStart(4, '0') + m.toString().padStart(2, '0') + d.toString().padStart(2, '0') 
+                     + '_' + h.toString().padStart(2, '0') + mm.toString().padStart(2, '0') + s.toString().padStart(2, '0');
     let reportFolder = FILEPATH.substring(0, FILEPATH.lastIndexOf('/')) + '/reports/';
     FILEPATH = reportFolder + 'vulnerabilitiesInfo_' + dateString + '.txt';
     htmlPath = reportFolder + 'vulnerabilitiesReport_' + dateString + '.html';
