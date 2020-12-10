@@ -25,16 +25,20 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
     
     let htmlPath = FILEPATH;
     let datetime = new Date();
-    // add leading zero for single digit number
     var y = datetime.getFullYear();
     var m = datetime.getMonth() + 1;
     var d = datetime.getDate();
     var h = datetime.getHours();
     var mm = datetime.getMinutes();
     var s = datetime.getSeconds();
+    // add leading zero for single digit number
     let dateString = y.toString().padStart(4, '0') + m.toString().padStart(2, '0') + d.toString().padStart(2, '0') 
                      + '_' + h.toString().padStart(2, '0') + mm.toString().padStart(2, '0') + s.toString().padStart(2, '0');
     let reportFolder = FILEPATH.substring(0, FILEPATH.lastIndexOf('/')) + '/reports/';
+    // create folder if not exist
+    if (!fs.existsSync(reportFolder)) {
+        fs.mkdirSync(reportFolder);
+    }
     FILEPATH = reportFolder + 'vulnerabilitiesInfo_' + dateString + '.txt';
     htmlPath = reportFolder + 'vulnerabilitiesReport_' + dateString + '.html';
     
@@ -106,6 +110,8 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
             if (err)
                 throw err;
         });
+        // remove .txt file
+        fs.unlinkSync(FILEPATH);
 
         console.log("Security Analyze With Complier Finish.");
         collection.set(document.uri, diagnostics);
