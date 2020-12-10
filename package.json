@@ -22,7 +22,8 @@
 	},
 	"categories": [
 		"Programming Languages",
-    	"Snippets"
+		"Linters",
+    	"Testing"
 	],
 	"activationEvents": [
 		"*"
@@ -45,6 +46,10 @@
 			{
 				"command": "scstudio.enablerecommand",
 				"title": "SCStudio: Enable Recommand"
+			},
+			{
+				"command": "scstudio.settime",
+				"title": "SCStudio: Set Maximum Wait-time for Security Analysis"
 			}
 		],
 		"languages": [

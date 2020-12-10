@@ -6,6 +6,7 @@ import {analyzeContract} from "./commands/analyzeContract";
 import {analyzeContractWithoutCompile} from "./commands/analyzeContractWithoutCompile";
 import {ItemProvider} from "./utils/itemProvider";
 import {GetContextualAutoCompleteByGlobalVariable} from "./utils/Apicompletion";
+import {getInputNum} from "./commands/getInputNum";
 
 let diagnosticsCollection: vscode.DiagnosticCollection;
 
@@ -14,6 +15,7 @@ let diagnosticsCollection: vscode.DiagnosticCollection;
 export function activate(context: vscode.ExtensionContext) {
 	// not enable token recommend at initialization
 	let recommendEnabled: boolean = false;
+	let maxTime: number = 60;  // default set to 1 miniute
 
 	ext.context = context;
 	ext.outputChannel = vscode.window.createOutputChannel("SCStudio");
@@ -26,17 +28,15 @@ export function activate(context: vscode.ExtensionContext) {
 	let solidityExt = vscode!.extensions!.getExtension('JuanBlanco.solidity')!;
 	solidityExt.activate();
 
-	// vscode.commands.executeCommand('ErrorLens.disable');
-
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
 	let analyzeSub = vscode.commands.registerCommand('scstudio.analyzecontract', async () => {
-		analyzeContract(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document);
+		analyzeContract(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document, maxTime);
 	});
 
 	let analyzeSubWithoutCompiler = vscode.commands.registerCommand('scstudio.analyzeContractWithoutCompile', async () => {
-		analyzeContractWithoutCompile(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document);
+		analyzeContractWithoutCompile(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document, maxTime);
 	});
 
 	let demoProvider = new ItemProvider([], []);
@@ -53,11 +53,17 @@ export function activate(context: vscode.ExtensionContext) {
 		solPv.dispose();
 	}); 
 
+	let setTimeStatement = vscode.commands.registerCommand('scstudio.settime', async () => {
+		maxTime = await getInputNum(maxTime);
+		console.log("Maxtime set to:", maxTime);
+	}); 
+
     // context.subscriptions.push(solPv);
 	context.subscriptions.push(analyzeSub);
 	context.subscriptions.push(analyzeSubWithoutCompiler);
 	context.subscriptions.push(provideStatement);
 	context.subscriptions.push(disprovideStatement);
+	context.subscriptions.push(setTimeStatement);
 
 	if(recommendEnabled) {
 

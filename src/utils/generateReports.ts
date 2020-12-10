@@ -46,7 +46,7 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
         vscode.languages.getDiagnostics(document.uri).slice(1,1);
         obj = JSON.parse(JSON.stringify(obj.text));
         let json_res = JSON.parse(obj);
-        console.log(json_res);
+        // console.log(json_res);
         
         // the HTML page
         let detailHtml = detailPrefix;
@@ -54,7 +54,7 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
 
         for(var ent in json_res.vulnerabilities) {
             let respos = json_res.vulnerabilities[ent];
-            if(respos) {
+            if (respos) {
                 let message = `Name: ` + respos.name;
                 // write the detail information into the file
                 let details = `Name:` + respos.name + '\n' +
@@ -81,8 +81,9 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
                 tableHtml = tableHtml+tableItemHtml;
           
                 fs.writeFile(FILEPATH, details, function (err) {
-                    if (err)
+                    if (err) {
                         throw err;
+                    }
                 });
 
                 let range = document.lineAt(respos.lineNo[0]-1).range;
@@ -102,19 +103,22 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
             }
         }
 
-        tableHtml = tableHtml + tableSuffix;
-        detailHtml = detailHtml + detailSuffix;
-        let html = tableHtml + detailHtml;
-        fs.writeFile(htmlPath, html, function (err) {
-            console.log(htmlPath)
-            if (err)
-                throw err;
-        });
-        // remove .txt file
-        fs.unlinkSync(FILEPATH);
+        if (fs.existsSync(FILEPATH)) {
+            tableHtml = tableHtml + tableSuffix;
+            detailHtml = detailHtml + detailSuffix;
+            let html = tableHtml + detailHtml;
+            fs.writeFile(htmlPath, html, function (err) {
+                if (err) {
+                    throw err;
+                }
+            });
+            // remove .txt file
+            fs.unlinkSync(FILEPATH);
+        }
 
         console.log("Security Analyze With Complier Finish.");
         collection.set(document.uri, diagnostics);
+        
 	} else {
 		collection.clear();
 	}

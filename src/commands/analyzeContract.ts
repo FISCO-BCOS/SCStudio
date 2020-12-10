@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+import fs = require('fs')
 import { getFileContent } from '../utils/getFileContent'
 import { getRequest, postRequest } from '../utils/httpUtils'
 import { checkPlatform, updateDiagnostics } from '../utils/generateReports'
@@ -9,7 +10,8 @@ const { window } = vscode
 export async function analyzeContract(
     diagnosticCollection: vscode.DiagnosticCollection,
     fileUri: vscode.Uri,
-    dc: vscode.TextDocument
+    dc: vscode.TextDocument,
+    inputTime: number
 ): Promise<void> {
     await vscode!.extensions!
         .getExtension('JuanBlanco.solidity')!
@@ -53,26 +55,10 @@ export async function analyzeContract(
                         '/',
                     )
                     rootDirectory = rootDirectory[rootDirectory.length - 1]
-                    
-                    // Input Time
-                    let inputOptions : vscode.InputBoxOptions =
-                    {
-                        prompt:"Please input the maximum time for analysis.",
-                        placeHolder: "Input an integer (Default value is 60)"
-                    };
-                    let inputTime = 60;
-
-                    await vscode.window.showInputBox(inputOptions).then(value =>{
-                        if(!value)
-                            return;
-                        else
-                            inputTime = Number(value);
-                    });
-
 
                     vscode.window
                         .showInformationMessage(
-                            `Your analysis has been submitted! Wait for vscode linting`,
+                            'Your file has been submitted! The analysis will finish in ' + inputTime.toString() + ' seconds.',
                             'Dismiss',
                         )
                         .then((x) => {
@@ -83,22 +69,38 @@ export async function analyzeContract(
 
                     const uri = '49.235.239.68:9090/contract';
                     let curname = contractName + Date.parse(new Date().toString());
-                    // set two minutes as a limit duration of testing
-                    const respBody = await postRequest(uri,{name:curname,contractcode:fileContent,limit:inputTime});
-                    updateDiagnostics(dc, diagnosticCollection, respBody, fileUri);                     
+
+                    const respBody = await (await postRequest(uri, {name:curname, contractcode:fileContent, limit:inputTime}));                
                     if (!respBody) {
                         vscode.window.showInformationMessage(
-                            `SCStudio: No security issues found in your contract.`,
+                            'SCStudio: Analysis Failed.',
                         );
-                    } else {
-                        vscode.window.showWarningMessage(
-                            `SCStudio: found some security issues with your contract. Please check the file vulnerabilities.html for detail`,
-                        );
+                    } 
+                    else {
+                        updateDiagnostics(dc, diagnosticCollection, respBody, fileUri);     
+                        
+                        let empty = true;
+                        Object.keys(respBody.body['vulnerabilities']).forEach(function(key) {
+                            if (respBody.body['vulnerabilities'][key]) {
+                                empty = false;
+                            }
+                       });
+
+                        if (empty) {
+                            vscode.window.showInformationMessage(
+                                'SCStudio: No security issues found in your contract.',
+                            );
+                        }
+                        else {
+                            vscode.window.showWarningMessage(
+                                'SCStudio: There are some security issues in your contract. Please check the report (HTML) for detail.',
+                            );
+                        }
                     }
-                
-            } catch (err) {
-                vscode.window.showErrorMessage(`SCStudio: ${err}`);
-            }
+                } catch (err) {
+                    console.log(err);
+                    vscode.window.showErrorMessage(`SCStudio: ${err}`);
+                }
         }, 
     );
 }
