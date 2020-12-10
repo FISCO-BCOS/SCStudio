@@ -1,13 +1,15 @@
 import superagent = require('superagent');
 
 export async function postRequest(url: string, data: object) {
+    const data_len = JSON.stringify(data).length;
     const promise = new Promise<superagent.Response>((resolve, reject) => {
         superagent.post(url)
             .send(data)
+            .set('content-length', `${data_len}`)
             .end((err: Error, res: superagent.Response) => {
                 if (!err) {
                     resolve(res);
-                } else{
+                } else {
                     console.log('err:' + err);
                     reject(err);
                 }
@@ -23,7 +25,7 @@ export async function postStringRequest(url: string, data: string) {
             .end((err: Error, res: superagent.Response) => {
                 if (!err) {
                     resolve(res);
-                } else{
+                } else {
                     console.log('err:' + err);
                     reject(err);
                 }

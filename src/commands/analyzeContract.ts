@@ -98,7 +98,6 @@ export async function analyzeContract(
                         }
                     }
                 } catch (err) {
-                    console.log(err);
                     vscode.window.showErrorMessage(`SCStudio: ${err}`);
                 }
         }, 
