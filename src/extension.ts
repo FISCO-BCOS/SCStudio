@@ -27,12 +27,28 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "SCStudio" is now active!');
 	let solidityExt = vscode!.extensions!.getExtension('JuanBlanco.solidity')!;
 	solidityExt.activate();
+	console.log('the solidity extension has been activated')
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
 	let analyzeSub = vscode.commands.registerCommand('scstudio.analyzecontract', async () => {
-		analyzeContract(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document, maxTime);
+		const FILEPATH = vscode.window!.activeTextEditor!.document.uri.fsPath;
+		var indexStart = Math.max(FILEPATH.lastIndexOf('\\'), FILEPATH.lastIndexOf('/'));
+		const filedir = FILEPATH.substring(0,indexStart);
+		if((vscode.workspace.workspaceFolders === undefined)){
+			vscode.window.showWarningMessage(
+				'SCStudio: Please open a folder as a workspace and put your contract in it!',
+			);
+		}
+		else if(filedir != vscode.workspace.workspaceFolders![0].uri.fsPath){
+			vscode.window.showWarningMessage(
+				'SCStudio: Please put your contract in the workspace which is:'+vscode.workspace.workspaceFolders![0].uri.fsPath
+			);
+		}
+		else{
+			analyzeContract(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document, maxTime);
+		}
 	});
 
 	let analyzeSubWithoutCompiler = vscode.commands.registerCommand('scstudio.analyzeContractWithoutCompile', async () => {

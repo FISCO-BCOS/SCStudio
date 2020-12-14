@@ -59,9 +59,9 @@ export async function analyzeContract(
 
                     const uri = '49.235.239.68:9090/contract';
                     if(contractType != "sol"){
-                        vscode.window.showWarningMessage(
-                            'SCStudio: The current file is not a Solidity contract. Please choose a solidity file to analyze.',
-                        );
+                            vscode.window.showWarningMessage(
+                                'SCStudio: The current file is not a Solidity contract. Please choose a solidity file to analyze.',
+                            );  
                     }
                     else{
                         vscode.window
@@ -70,9 +70,7 @@ export async function analyzeContract(
                             'Dismiss',
                         )
                         diagnosticCollection.clear();
-                    // console.log("the current name is:"+contractType);
                     let curname = contractName + Date.parse(new Date().toString());
-                    console.log(curname,fileContent,inputTime);
                     const respBody = await (await postRequest(uri, {name:curname, contractcode:fileContent, limit:inputTime}));                
                     if (!respBody) {
                         vscode.window.showInformationMessage(
