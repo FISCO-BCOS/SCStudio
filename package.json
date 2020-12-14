@@ -17,13 +17,11 @@
 		"type": "git",
 		"url": "https://github.com/fCorleone/SecSolidity"
 	},
-	"bugs": {
-		
-	},
+	"bugs": {},
 	"categories": [
 		"Programming Languages",
 		"Linters",
-    	"Testing"
+		"Testing"
 	],
 	"activationEvents": [
 		"*"

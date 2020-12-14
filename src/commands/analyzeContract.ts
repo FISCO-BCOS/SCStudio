@@ -40,6 +40,7 @@ export async function analyzeContract(
                     var indexEnd = FILEPATH.lastIndexOf('.');
                     var strLen = (indexEnd - indexStart) - 1;
                     const contractName = FILEPATH.substr(indexStart + 1, strLen);
+                    const contractType = FILEPATH.substring(indexEnd + 1)
                     console.log(FILEPATH, contractName)
 
                     FILEPATH = checkPlatform(FILEPATH);
@@ -56,20 +57,22 @@ export async function analyzeContract(
                     )
                     rootDirectory = rootDirectory[rootDirectory.length - 1]
 
-                    vscode.window
+                    const uri = '49.235.239.68:9090/contract';
+                    if(contractType != "sol"){
+                        vscode.window.showWarningMessage(
+                            'SCStudio: The current file is not a Solidity contract. Please choose a solidity file to analyze.',
+                        );
+                    }
+                    else{
+                        vscode.window
                         .showInformationMessage(
                             'Your file has been submitted! The analysis will finish in ' + inputTime.toString() + ' seconds.',
                             'Dismiss',
                         )
-                        .then((x) => {
-                            return
-                        })
-
-                    diagnosticCollection.clear();
-
-                    const uri = '49.235.239.68:9090/contract';
+                        diagnosticCollection.clear();
+                    // console.log("the current name is:"+contractType);
                     let curname = contractName + Date.parse(new Date().toString());
-
+                    console.log(curname,fileContent,inputTime);
                     const respBody = await (await postRequest(uri, {name:curname, contractcode:fileContent, limit:inputTime}));                
                     if (!respBody) {
                         vscode.window.showInformationMessage(
@@ -77,6 +80,7 @@ export async function analyzeContract(
                         );
                     } 
                     else {
+                        
                         updateDiagnostics(dc, diagnosticCollection, respBody, fileUri);     
                         
                         let empty = true;
@@ -97,6 +101,7 @@ export async function analyzeContract(
                             );
                         }
                     }
+                }
                 } catch (err) {
                     vscode.window.showErrorMessage(`SCStudio: ${err}`);
                 }
