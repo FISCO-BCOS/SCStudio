@@ -55,7 +55,7 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
         for(var ent in json_res.vulnerabilities) {
             let respos = json_res.vulnerabilities[ent];
             if (respos) {
-                let message = `Name: ` + respos.name;
+                let message = `Name: ` + respos.name + `; Advice: ` + respos.advice;
                 // write the detail information into the file
                 let details = `Name:` + respos.name + '\n' +
                     `Description:` + respos.description + '\n' +
