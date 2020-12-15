@@ -71,7 +71,7 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
                 curDetail = curDetail.replace(/!ADVICE!/, respos.advice);
                 curDetail = curDetail.replace(/!LINE!/, respos.lineNo[0]);
                 curDetail = curDetail.replace(/!LEVEL!/, respos.level);
-                curDetail = curDetail.replace(/SOURCECODE/, document.lineAt(respos.lineNo[0]-1).text);
+                curDetail = curDetail.replace(/!SOURCECODE!/, document.lineAt(respos.lineNo[0]-1).text);
                 detailHtml = detailHtml + curDetail;
 
                 // Generate the table html sector of the current vulnerability
