@@ -31,7 +31,7 @@ class LSTMBase(object):
 
     def sample(self, preds, temperature=1.0):
         # helper function to sample an index from a probability array
-        # 较少的熵使生成的序列更加可预测，较多的熵更具有创造性
+        # Small temperature will make the output more predictable, while big temperature will make the output more creative
         preds = np.asarray(preds).astype('float64')
         preds = np.log(preds) / temperature
         exp_preds = np.exp(preds)
@@ -47,7 +47,8 @@ class LSTMBase(object):
 
 
 
-    def predict(self, text, diversity, subsequent, decay, max_prediction_steps, break_at_token=None): # diversity表示第一个token的多样性，subsequent代表后续字符的多样性，decay表示随着预测step的增加temp会依次减小多少
+    def predict(self, text, diversity, subsequent, decay, max_prediction_steps, break_at_token=None):
+        # diversity means the temperature value of the first token, and subsequent represent the temperature value of the subsequent characters.
         if self.model is None:
             self.model = self.build_model()
             a=np.ones((1,1,2172))
@@ -56,7 +57,7 @@ class LSTMBase(object):
         for i in range(max_prediction_steps):
             X = self.encoder_decoder.encode_question(text)
             preds = self.model.predict(X, verbose=0)[0]
-            if i==0: # 预测第一个token
+            if i==0:
                 diversity = diversity
             else:
                 diversity = subsequent
@@ -64,7 +65,7 @@ class LSTMBase(object):
             answer_token = self.sample(preds, diversity)
             new_text_token = self.encoder_decoder.decode_y(answer_token)
             outputs.append(new_text_token)
-            text += new_text_token # 把上一步预测的结果拼接在字符串后面，继续作为模型的输入，来进行预测
+            text += new_text_token
             if break_at_token is not None and break_at_token == new_text_token:
                 break
         return self.encoder_decoder.untokenize(outputs)
