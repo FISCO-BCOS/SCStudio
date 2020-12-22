@@ -2,6 +2,20 @@
 
 Secsolidity is a vscode extension for writing solidity contracts in a safe way. 
 
+The current version of SecSolidity needs docker to make an analysis of smart contracts. If you would like to analyze your contract from a web service, please checkout to the version: '531446698c53ed23afe05e727b5dfc3361e782df' by :
+
+```
+git checkout 531446
+```
+
+For the current version, please first install `docker` for your system, you can follow the instructions [here](https://docs.docker.com/get-docker/).
+After installing `docker`, you need to pull the image of our contract analyzing tool by :
+```
+docker pull renardbebe/entools
+```
+
+Enjoy!
+
 ## Features
 
 For now, Secsolidity provides such features:
