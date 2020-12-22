@@ -44,9 +44,10 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
     
     if (document) {
         vscode.languages.getDiagnostics(document.uri).slice(1,1);
-        obj = JSON.parse(JSON.stringify(obj.text));
-        let json_res = JSON.parse(obj);
-        // console.log(json_res);
+        // obj = JSON.parse(JSON.stringify(obj.text));
+        // let json_res = JSON.parse(obj);
+
+        let json_res = obj
         
         // the HTML page
         let detailHtml = detailPrefix;

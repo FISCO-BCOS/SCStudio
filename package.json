@@ -104,6 +104,7 @@
 	],
 	"dependencies": {
 		"@types/superagent": "^4.1.7",
+		"await-exec": "^0.1.2",
 		"colors.ts": "^1.0.20",
 		"log4js": "^6.2.1",
 		"superagent": "^5.2.2",

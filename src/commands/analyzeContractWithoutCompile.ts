@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+import fs = require('fs')
 import { getFileContent } from '../utils/getFileContent'
 import { getRequest, postRequest } from '../utils/httpUtils'
 import { checkPlatform, updateDiagnostics } from '../utils/generateReports'
@@ -31,6 +32,7 @@ export async function analyzeContractWithoutCompile(
 
         let FILEPATH = fileUri.fsPath;
         var indexStart = Math.max(FILEPATH.lastIndexOf('\\'), FILEPATH.lastIndexOf('/'));
+        const filedir = FILEPATH.substring(0,indexStart);
         var indexEnd = FILEPATH.lastIndexOf('.');
         var strLen = (indexEnd - indexStart) - 1;
         const contractName = FILEPATH.substr(indexStart + 1, strLen);
@@ -63,9 +65,20 @@ export async function analyzeContractWithoutCompile(
         diagnosticCollection.clear();
 
         const uri = '49.235.239.68:9090/contract';
-        let curname = contractName + Date.parse(new Date().toString());
+        
+        const exec  = require("await-exec");
+        let commandline = "docker run    -v /var/run/docker.sock:/var/run/docker.sock    -v /usr/local/bin/docker:/usr/bin/docker    -v "+filedir+":/enTools/contract    -i renardbebe/entools "+contractName+" "+filedir+"  -t "+inputTime
 
-        const respBody = await postRequest(uri, {name:curname, contractcode:fileContent, limit:inputTime});
+                    
+        let curname = contractName + Date.parse(new Date().toString());
+        // if the user wants to analyze online
+        // const respBody = await (await postRequest(uri, {name:curname, contractcode:fileContent, limit:inputTime}));            
+        // respBody = JSON.parse(JSON.stringify(respBody.text));
+        
+        // if the user doesn't want to put his code online
+        await exec(commandline);    
+        const jsonfile = fs.readFileSync(filedir + "/" + contractName + "/finalReport.json","utf8")
+        let respBody = JSON.parse(jsonfile)
                                 
         if (!respBody) {
             vscode.window.showInformationMessage(

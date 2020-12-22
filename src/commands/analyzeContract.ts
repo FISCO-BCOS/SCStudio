@@ -37,6 +37,7 @@ export async function analyzeContract(
 
                     let FILEPATH = fileUri.fsPath;
                     var indexStart = Math.max(FILEPATH.lastIndexOf('\\'), FILEPATH.lastIndexOf('/'));
+                    const filedir = FILEPATH.substring(0,indexStart);
                     var indexEnd = FILEPATH.lastIndexOf('.');
                     var strLen = (indexEnd - indexStart) - 1;
                     const contractName = FILEPATH.substr(indexStart + 1, strLen);
@@ -58,6 +59,7 @@ export async function analyzeContract(
                     rootDirectory = rootDirectory[rootDirectory.length - 1]
 
                     const uri = '49.235.239.68:9090/contract';
+
                     if(contractType != "sol"){
                             vscode.window.showWarningMessage(
                                 'SCStudio: The current file is not a Solidity contract. Please choose a solidity file to analyze.',
@@ -70,8 +72,21 @@ export async function analyzeContract(
                             'Dismiss',
                         )
                         diagnosticCollection.clear();
+
+                    const exec  = require("await-exec");
+                    let commandline = "docker run    -v /var/run/docker.sock:/var/run/docker.sock    -v /usr/local/bin/docker:/usr/bin/docker    -v "+filedir+":/enTools/contract    -i renardbebe/entools "+contractName+" "+filedir+"  -t "+inputTime
+
+                    
                     let curname = contractName + Date.parse(new Date().toString());
-                    const respBody = await (await postRequest(uri, {name:curname, contractcode:fileContent, limit:inputTime}));                
+                    // if the user wants to analyze online
+                    // const respBody = await (await postRequest(uri, {name:curname, contractcode:fileContent, limit:inputTime}));            
+                    // respBody = JSON.parse(JSON.stringify(respBody.text));
+                    
+                    // if the user doesn't want to put his code online
+                    await exec(commandline);    
+                    const jsonfile = fs.readFileSync(filedir + "/" + contractName + "/finalReport.json","utf8")
+                    let respBody = JSON.parse(jsonfile)
+                    
                     if (!respBody) {
                         vscode.window.showInformationMessage(
                             'SCStudio: Analysis Failed.',
@@ -82,8 +97,8 @@ export async function analyzeContract(
                         updateDiagnostics(dc, diagnosticCollection, respBody, fileUri);     
                         
                         let empty = true;
-                        Object.keys(respBody.body['vulnerabilities']).forEach(function(key) {
-                            if (respBody.body['vulnerabilities'][key]) {
+                        Object.keys(respBody.vulnerabilities).forEach(function(key) {
+                            if (respBody.vulnerabilities[key]) {
                                 empty = false;
                             }
                        });
