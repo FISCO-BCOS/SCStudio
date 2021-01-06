@@ -7,6 +7,7 @@ import {analyzeContractWithoutCompile} from "./commands/analyzeContractWithoutCo
 import {ItemProvider} from "./utils/itemProvider";
 import {GetContextualAutoCompleteByGlobalVariable} from "./utils/Apicompletion";
 import {getInputNum} from "./commands/getInputNum";
+import {getURL} from "./commands/getURL";
 
 let diagnosticsCollection: vscode.DiagnosticCollection;
 
@@ -15,7 +16,9 @@ let diagnosticsCollection: vscode.DiagnosticCollection;
 export function activate(context: vscode.ExtensionContext) {
 	// not enable token recommend at initialization
 	let recommendEnabled: boolean = false;
+	let webServiceEnabled: boolean = false;
 	let maxTime: number = 60;  // default set to 1 miniute
+	let url: string = "49.235.239.68:9090";
 
 	ext.context = context;
 	ext.outputChannel = vscode.window.createOutputChannel("SCStudio");
@@ -38,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const filedir = FILEPATH.substring(0,indexStart);
 		if((vscode.workspace.workspaceFolders === undefined)){
 			vscode.window.showWarningMessage(
-				'SCStudio: Please open a folder as a workspace and put your contract in it!',
+				'SCStudio: Please open a folder as a workspace and put your5 contract in it!',
 			);
 		}
 		else if(filedir != vscode.workspace.workspaceFolders![0].uri.fsPath){
@@ -47,12 +50,12 @@ export function activate(context: vscode.ExtensionContext) {
 			);
 		}
 		else{
-			analyzeContract(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document, maxTime);
+			analyzeContract(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document, maxTime,url,webServiceEnabled);
 		}
 	});
 
 	let analyzeSubWithoutCompiler = vscode.commands.registerCommand('scstudio.analyzeContractWithoutCompile', async () => {
-		analyzeContractWithoutCompile(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document, maxTime);
+		analyzeContractWithoutCompile(diagnosticsCollection, vscode.window!.activeTextEditor!.document.uri,vscode.window!.activeTextEditor!.document, maxTime,url,webServiceEnabled);
 	});
 
 	let demoProvider = new ItemProvider([], []);
@@ -74,12 +77,29 @@ export function activate(context: vscode.ExtensionContext) {
 		console.log("Maxtime set to:", maxTime);
 	}); 
 
+	let setUrlStatement = vscode.commands.registerCommand('scstudio.seturl', async () => {
+		url = await getURL(url);
+		console.log("The url of the web service is set to:", url);
+	}); 
+
+	let webStatement = vscode.commands.registerCommand('scstudio.enableWebservice', () => {
+		webServiceEnabled = true;
+	}); 
+	let diswebStatement = vscode.commands.registerCommand('scstudio.disableWebservice', () => {
+		webServiceEnabled = false;
+	}); 
+
+	
+
     // context.subscriptions.push(solPv);
 	context.subscriptions.push(analyzeSub);
 	context.subscriptions.push(analyzeSubWithoutCompiler);
 	context.subscriptions.push(provideStatement);
 	context.subscriptions.push(disprovideStatement);
 	context.subscriptions.push(setTimeStatement);
+	context.subscriptions.push(setUrlStatement);
+	context.subscriptions.push(webStatement);
+	context.subscriptions.push(diswebStatement);
 
 	if(recommendEnabled) {
 

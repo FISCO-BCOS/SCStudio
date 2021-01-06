@@ -11,7 +11,9 @@ export async function analyzeContractWithoutCompile(
     diagnosticCollection: vscode.DiagnosticCollection,
     fileUri: vscode.Uri,
     dc: vscode.TextDocument,
-    inputTime: number
+    inputTime: number,
+    url : string,
+    isWebService: boolean
 ): Promise<void> {
     try {
         await vscode!.extensions!.getExtension('philhindle.errorlens')!.activate().then(
@@ -64,7 +66,7 @@ export async function analyzeContractWithoutCompile(
 
         diagnosticCollection.clear();
 
-        const uri = '49.235.239.68:9090/contract';
+        const uri = url + '/contract';
         
         const exec  = require("await-exec");
         let commandline = "docker run    -v /var/run/docker.sock:/var/run/docker.sock    -v /usr/local/bin/docker:/usr/bin/docker    -v "+filedir+":/enTools/contract    -i renardbebe/entools "+contractName+" "+filedir+"  -t "+inputTime
@@ -72,13 +74,17 @@ export async function analyzeContractWithoutCompile(
                     
         let curname = contractName + Date.parse(new Date().toString());
         // if the user wants to analyze online
-        // const respBody = await (await postRequest(uri, {name:curname, contractcode:fileContent, limit:inputTime}));            
-        // respBody = JSON.parse(JSON.stringify(respBody.text));
-        
+        let respBody : any;
+        if (isWebService){
+            respBody = await (await postRequest(uri, {name:curname, contractcode:fileContent, limit:inputTime}));            
+            respBody = JSON.parse(JSON.stringify(respBody.text));
+        }
+        else{
         // if the user doesn't want to put his code online
-        await exec(commandline);    
-        const jsonfile = fs.readFileSync(filedir + "/" + contractName + "/finalReport.json","utf8")
-        let respBody = JSON.parse(jsonfile)
+            await exec(commandline);    
+            const jsonfile = fs.readFileSync(filedir + "/" + contractName + "/finalReport.json","utf8")
+            respBody = JSON.parse(jsonfile)
+        }
                                 
         if (!respBody) {
             vscode.window.showInformationMessage(

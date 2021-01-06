@@ -48,6 +48,18 @@
 			{
 				"command": "scstudio.settime",
 				"title": "SCStudio: Set Maximum Wait-time for Security Analysis"
+			},
+			{
+				"command": "scstudio.seturl",
+				"title": "SCStudio: Set the url of the web service"
+			},
+			{
+				"command": "scstudio.enableWebservice",
+				"title": "SCStudio: Enable the web service"
+			},
+			{
+				"command": "scstudio.disableWebservice",
+				"title": "SCStudio: Disable the web service"
 			}
 		],
 		"languages": [

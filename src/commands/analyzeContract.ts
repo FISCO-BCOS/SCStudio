@@ -11,7 +11,9 @@ export async function analyzeContract(
     diagnosticCollection: vscode.DiagnosticCollection,
     fileUri: vscode.Uri,
     dc: vscode.TextDocument,
-    inputTime: number
+    inputTime: number,
+    url : string,
+    isWebService: boolean
 ): Promise<void> {
     await vscode!.extensions!
         .getExtension('JuanBlanco.solidity')!
@@ -57,8 +59,9 @@ export async function analyzeContract(
                         '/',
                     )
                     rootDirectory = rootDirectory[rootDirectory.length - 1]
-
-                    const uri = '49.235.239.68:9090/contract';
+                    
+                    const uri = url + '/contract';
+                    
 
                     if(contractType != "sol"){
                             vscode.window.showWarningMessage(
@@ -78,14 +81,18 @@ export async function analyzeContract(
 
                     
                     let curname = contractName + Date.parse(new Date().toString());
+                    let respBody : any;
                     // if the user wants to analyze online
-                    // const respBody = await (await postRequest(uri, {name:curname, contractcode:fileContent, limit:inputTime}));            
-                    // respBody = JSON.parse(JSON.stringify(respBody.text));
-                    
+                    if (isWebService){
+                        respBody = await (await postRequest(uri, {name:curname, contractcode:fileContent, limit:inputTime}));            
+                        respBody = JSON.parse(JSON.stringify(respBody.text));
+                    }
+                    else{
                     // if the user doesn't want to put his code online
-                    await exec(commandline);    
-                    const jsonfile = fs.readFileSync(filedir + "/" + contractName + "/finalReport.json","utf8")
-                    let respBody = JSON.parse(jsonfile)
+                        await exec(commandline);    
+                        const jsonfile = fs.readFileSync(filedir + "/" + contractName + "/finalReport.json","utf8")
+                        respBody = JSON.parse(jsonfile)
+                    }
                     
                     if (!respBody) {
                         vscode.window.showInformationMessage(
