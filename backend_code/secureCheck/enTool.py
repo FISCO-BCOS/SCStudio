@@ -545,16 +545,16 @@ def getAdvice(entID) :
 
 def getLevel(entID) :
     switcher = {
-        'ent1': 'warning',
+        'ent1': 'ignore',
         'ent2': 'error',
-        'ent3': 'warning',
+        'ent3': 'ignore',
         'ent4': 'error',
         'ent5': 'error',
 
         'ent6': 'error',
         'ent7': 'error',
         'ent8': 'error',
-        'ent9': 'warning',
+        'ent9': 'ignore',
         'ent10': 'error',
 
         'ent11': 'error',
@@ -570,12 +570,12 @@ def getLevel(entID) :
         'ent20': 'warning',
 
         'ent21': 'warning',
-        'ent22': 'warning',
+        'ent22': 'ignore',
         'ent23': 'warning',
         'ent24': 'error',
         'ent25': 'warning',
 
-        'ent26': 'warning',
+        'ent26': 'ignore',
         'ent27': 'warning',
         'ent28': 'warning',
         'ent29': 'warning',
@@ -593,11 +593,11 @@ def getLevel(entID) :
         'ent39': 'warning',
         'ent40': 'warning',
 
-        'ent41': 'warning',
-        'ent42': 'warning',
+        'ent41': 'ignore',
+        'ent42': 'ignore',
         'ent43': 'warning',
         'ent44': 'warning',
-        'ent45': 'warning',
+        'ent45': 'ignore',
 
         'ent46': 'warning',
         'ent47': 'warning',
@@ -664,7 +664,7 @@ if __name__ == '__main__' :
         outJson = {"contractname": contractName + '.sol', "vulnerabilities": {}}
         for i in range(1, maxIdx+1) :
             entID = 'ent' + str(i)
-            if len(vulMap[entID]) != 0 :
+            if len(vulMap[entID]) != 0 and getLevel(entID) != 'ignore' :
                 outJson['vulnerabilities'][entID] = {}
 
                 outJson['vulnerabilities'][entID]['name'] = getName(entID)
