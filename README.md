@@ -2,16 +2,18 @@
 
 Secsolidity is a vscode extension for writing solidity contracts in a safe way. 
 
-The current version of SecSolidity needs docker to make an analysis of smart contracts. If you would like to analyze your contract from a web service, please checkout to the version: '531446698c53ed23afe05e727b5dfc3361e782df' by :
-
-```
-git checkout 531446
-```
-
-For the current version, please first install `docker` for your system, you can follow the instructions [here](https://docs.docker.com/get-docker/).
-After installing `docker`, you need to pull the image of our contract analyzing tool by :
+The current version of SecSolidity supports two ways to analyze your smart contracts. If you don't want to upload your contract to any server, we provide a docker image to let you check your code locally. Please first install `docker` for your system, you can follow the instructions [here](https://docs.docker.com/get-docker/). After installing `docker`, you need to pull the image of our contract analyzing tool by :
 ```
 docker pull renardbebe/entools
+```
+
+Meanwhile, if you want to use a web service to analyze the contract, you need first use the following command to enable the web service.
+```
+SCStudio: Enable the web service
+```
+Then, please set the url of your web service by the following command:
+```
+SCStudio: Set the url of the web service
 ```
 
 Enjoy!
@@ -22,11 +24,11 @@ For now, Secsolidity provides such features:
 
 **a) Smart contract security check**
 
-Secsoldity use a ensemble analysis tool to check whether there is a vulnerability in the current smart contract. At present, Secsolidity supports 56 kinds of common vulnerabilities such as 'Reentrancy', 'Overflow', 'TimeStamp Dependency' and 'Contract Backdoors'.
+Secsoldity use an ensemble analysis tool to check whether there is a vulnerability in the current smart contract. At present, Secsolidity supports 56 kinds of common vulnerabilities such as 'Reentrancy', 'Overflow', 'TimeStamp Dependency' and 'Contract Backdoors'.
 
 In order to use this function, the developer can use the following command:
 ```
-SecSolidity: Analyze Contract
+SCStudio: Analyze Contract
 ```
 For now, the time limit for each contract is set as 60 seconds.
 
@@ -36,10 +38,7 @@ For now, the time limit for each contract is set as 60 seconds.
 
 Secsolidity provides a suggestion for the next token. This is useful for a solidity beginner.
 
-In order to use this function, the developer can click 'space' when he has finished typing the current token and use the following command:
-```
-Trigger Suggestion
-```
+In order to use this function, the developer can click 'space' when he has finished typing the current token.
 ![Feature_Token](img/secsolidity_token.gif)
 
 **c) API completion**
