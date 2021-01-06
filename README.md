@@ -1,8 +1,8 @@
-# Secsolidity README
+# SCStudio README
 
-Secsolidity is a vscode extension for writing solidity contracts in a safe way. 
+SCStudio is a vscode extension for writing solidity contracts in a safe way. 
 
-The current version of SecSolidity supports two ways to analyze your smart contracts. If you don't want to upload your contract to any server, we provide a docker image to let you check your code locally. Please first install `docker` for your system, you can follow the instructions [here](https://docs.docker.com/get-docker/). After installing `docker`, you need to pull the image of our contract analyzing tool by :
+The current version of SCStudio supports two ways to analyze your smart contracts. If you don't want to upload your contract to any server, we provide a docker image to let you check your code locally. Please first install `docker` for your system, you can follow the instructions [here](https://docs.docker.com/get-docker/). After installing `docker`, you need to pull the image of our contract analyzing tool by :
 ```
 docker pull renardbebe/entools
 ```
