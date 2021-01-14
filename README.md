@@ -30,6 +30,11 @@ In order to use this function, the developer can use the following command:
 ```
 SCStudio: Analyze Contract
 ```
+For now, the time limit for each contract is set as 60 seconds by default.
+You can set the time limit by using the following command:
+```
+SCStudio: Set Maximum Wait-time for Security Analysis
+```
 For now, the time limit for each contract is set as 60 seconds.
 
 ![Feature_Security_Check](img/secsolidity_analyze.gif)
@@ -39,7 +44,7 @@ For now, the time limit for each contract is set as 60 seconds.
 Secsolidity provides a suggestion for the next token. This is useful for a solidity beginner.
 
 In order to use this function, the developer can click 'space' when he has finished typing the current token.
-![Feature_Token](img/secsolidity_token.gif)
+
 
 **c) API completion**
 Secsolidity supports api completion for common structs in solidity language such as `msg` and `block`.
