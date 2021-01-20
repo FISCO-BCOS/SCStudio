@@ -84,8 +84,8 @@ export async function analyzeContract(
                     let respBody : any;
                     // if the user wants to analyze online
                     if (isWebService){
-                        respBody = await (await postRequest(uri, {name:curname, contractcode:fileContent, limit:inputTime}));            
-                        respBody = JSON.parse(JSON.stringify(respBody.text));
+                        respBody = await (await postRequest(uri, {name:curname, contractcode:fileContent, limit:inputTime}));
+                        respBody = JSON.parse(respBody.text);
                     }
                     else{
                     // if the user doesn't want to put his code online

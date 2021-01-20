@@ -41,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const filedir = FILEPATH.substring(0,indexStart);
 		if((vscode.workspace.workspaceFolders === undefined)){
 			vscode.window.showWarningMessage(
-				'SCStudio: Please open a folder as a workspace and put your5 contract in it!',
+				'SCStudio: Please open a folder as a workspace and put your contract in it!',
 			);
 		}
 		else if(filedir != vscode.workspace.workspaceFolders![0].uri.fsPath){
