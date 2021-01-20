@@ -20,11 +20,11 @@ Enjoy!
 
 ## Features
 
-For now, Secsolidity provides such features:
+For now, SCStudio provides such features:
 
 **a) Smart contract security check**
 
-Secsoldity use an ensemble analysis tool to check whether there is a vulnerability in the current smart contract. At present, Secsolidity supports 56 kinds of common vulnerabilities such as 'Reentrancy', 'Overflow', 'TimeStamp Dependency' and 'Contract Backdoors'.
+SCStudio use an ensemble analysis tool to check whether there is a vulnerability in the current smart contract. At present, SCStudio supports 56 kinds of common vulnerabilities such as 'Reentrancy', 'Overflow', 'TimeStamp Dependency' and 'Contract Backdoors'.
 
 In order to use this function, the developer can use the following command:
 ```
@@ -41,24 +41,24 @@ For now, the time limit for each contract is set as 60 seconds.
 
 **b) Next token suggestion**
 
-Secsolidity provides a suggestion for the next token. This is useful for a solidity beginner.
+SCStudio provides a suggestion for the next token. This is useful for a solidity beginner.
 
 In order to use this function, the developer can click 'space' when he has finished typing the current token.
 
 
 **c) API completion**
-Secsolidity supports api completion for common structs in solidity language such as `msg` and `block`.
+SCStudio supports api completion for common structs in solidity language such as `msg` and `block`.
 
 **d) Highlight**
-Secsolidity implements a highlight feature for solidity language.
+SCStudio implements a highlight feature for solidity language.
 
 
 ## Usage
 
-The current version of Secsolidity is still under development. You can only use it by cloning the repository and run the extension in debugging mode. You can use this tool by the followint commands:
+The current version of SCStudio is still under development. You can only use it by cloning the repository and run the extension in debugging mode. You can use this tool by the followint commands:
 ```shell
-git clone https://github.com/fCorleone/SecSolidity.git
-cd SecSolidity
+git clone https://github.com/FISCO-BCOS/SCStudio
+cd SCStudio
 # install dependency-package
 npm install
 # install dependency-extension
