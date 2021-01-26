@@ -24,7 +24,7 @@ Then, please set the url of your web service by the following command:
 SCStudio: Set the url of the web service
 ```
 
-Enjoy!
+
 
 ## Features
 
