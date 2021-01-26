@@ -38,12 +38,12 @@ In order to use this function, the developer can use the following command:
 ```
 SCStudio: Analyze Contract
 ```
-For now, the time limit for each contract is set as 60 seconds by default.
+By default, the time limit for each contract is set as 60 seconds.
 You can set the time limit by using the following command:
 ```
 SCStudio: Set Maximum Wait-time for Security Analysis
 ```
-For now, the time limit for each contract is set as 60 seconds.
+Now, the time limit for each contract is set as 10 seconds.
 
 ![Feature_Security_Check](img/secure.gif)
 
