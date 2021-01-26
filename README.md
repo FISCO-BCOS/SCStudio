@@ -1,3 +1,11 @@
+**Note:** you need to clone this repo using the `--recursive` flag since this repo has submodules, e.g.,
+
+```
+git clone git@github.com:FISCO-BCOS/SCStudio.git --recursive
+```
+
+
+
 # SCStudio README
 
 SCStudio is a vscode extension for writing solidity contracts in a safe way. 
@@ -37,14 +45,27 @@ SCStudio: Set Maximum Wait-time for Security Analysis
 ```
 For now, the time limit for each contract is set as 60 seconds.
 
-![Feature_Security_Check](img/secsolidity_analyze.gif)
+![Feature_Security_Check](img/secure.gif)
 
 **b) Next token suggestion**
 
 SCStudio provides a suggestion for the next token. This is useful for a solidity beginner.
 
-In order to use this function, the developer can click 'space' when he has finished typing the current token.
+In order to use this function, the developer should first use the following command to enable it:
 
+```
+SCStudio: Enable Recommand
+```
+
+Then the developer can click 'space' when he has finished typing the current token.
+
+![Feature_Security_Check](img/token.gif)
+
+If you want to disable this feature, please use
+
+```
+SCStudio: Disable Recommand
+```
 
 **c) API completion**
 SCStudio supports api completion for common structs in solidity language such as `msg` and `block`.
