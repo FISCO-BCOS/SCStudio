@@ -31,7 +31,17 @@ def text_tokenize(txt):
 
 
 class EncoderDecoder():
-    def __init__(self, maxlen, min_count, unknown, padding, tokenize, untokenize, reuse, totrain, usenew):
+    def __init__(
+            self,
+            maxlen,
+            min_count,
+            unknown,
+            padding,
+            tokenize,
+            untokenize,
+            reuse,
+            totrain,
+            usenew):
         self.maxlen = maxlen
         self.min_count = min_count
         self.unknown = unknown
@@ -78,8 +88,11 @@ class EncoderDecoder():
 
     def build_coders(self, tokens):
         tokens = [item for sublist in tokens for item in sublist]
-        word_to_index = {k: v for k, v in Counter(tokens).items() if v >= self.min_count}
-        word_to_index = {k: i for i, (k, v) in enumerate(word_to_index.items(),1)}
+        word_to_index = {k: v for k, v in Counter(
+            tokens).items() if v >= self.min_count}
+        word_to_index = {
+            k: i for i, (k, v) in enumerate(
+                word_to_index.items(), 1)}
         word_to_index[self.unknown] = 0
         index_to_word = {v: k for k, v in word_to_index.items()}
         index_to_word[0] = self.unknown
@@ -102,22 +115,24 @@ class EncoderDecoder():
         self.dy = ed.dy
         del ed
         # gc.collect()
-        print("Reload the original tokens, and unique question tokens:", len(self.ex))
+        print(
+            "Reload the original tokens, and unique question tokens:", len(
+                self.ex))
         print("and unique answer tokens:", len(self.ey))
-
 
     def get_xy(self):
         print("START GETTING XY")
         n = len(self.questions)
-       
+
         tokenX = np.zeros((n, self.maxlen), dtype=np.int)
         y = np.zeros((n, len(self.ey)), dtype=np.bool)
         print("DELARATION!")
         l = len(self.questions)
-        for num_pair, (question, answer) in enumerate(zip(self.questions,self.answers)):
-            for num_token, q_token in enumerate(question): 
+        for num_pair, (question, answer) in enumerate(
+                zip(self.questions, self.answers)):
+            for num_token, q_token in enumerate(question):
                 tokenX[num_pair, num_token] = self.encode_x(q_token)
-            
+
             y[num_pair, self.encode_y(answer)] = 1
         print("COMPELETED FOR LOOP")
         self.num_unique_q_tokens = len(self.ex)
@@ -147,7 +162,7 @@ class EncoderDecoder():
 
     def pad(self, tokens):
         seqlen = len(tokens)
-        
+
         return [self.padding] * (self.maxlen - seqlen + 1) + tokens
 
     def encode_question(self, text):
@@ -159,25 +174,45 @@ class EncoderDecoder():
 
 
 class TextEncoderDecoder(EncoderDecoder):
-    def __init__(self, texts, tokenize=str.split, untokenize=" ".join,
-                 window_step=3, maxlen=20, min_count=1,
-                 unknown="UNKNOWN", padding="PADDING", reuse=0, totrain=1, usepkl=0, usenew=0):
+    def __init__(
+            self,
+            texts,
+            tokenize=str.split,
+            untokenize=" ".join,
+            window_step=3,
+            maxlen=20,
+            min_count=1,
+            unknown="UNKNOWN",
+            padding="PADDING",
+            reuse=0,
+            totrain=1,
+            usepkl=0,
+            usenew=0):
         self.texts = texts
         self.window_step = window_step
-        self.usepkl=usepkl
+        self.usepkl = usepkl
         c = super(TextEncoderDecoder, self)
-        c.__init__(maxlen, min_count, unknown, padding, tokenize, untokenize, reuse, totrain, usenew)
+        c.__init__(
+            maxlen,
+            min_count,
+            unknown,
+            padding,
+            tokenize,
+            untokenize,
+            reuse,
+            totrain,
+            usenew)
 
     def build_data(self):
         self.questions = []
         self.answers = []
-        tokencnt=0
+        tokencnt = 0
         if len(self.texts) != 0:
             print("Building data without questions.pkl")
             for text in self.texts:
                 tokens = self.tokenize(text)
                 text = self.pad(tokens)
-                tokencnt+=len(tokens)
+                tokencnt += len(tokens)
                 seqlen = len(text)
                 for i in range(0, seqlen - self.maxlen, self.window_step):
                     self.questions.append(text[i: i + self.maxlen])
@@ -272,15 +307,15 @@ class TextEncoderDecoder(EncoderDecoder):
                     cnt += 1
                     # b[0, self.ey.get(cura,0)]=0
                 print(str(cnt))
-            self.num_questions=cnt
-            self.num_answers=cnt
-            just.write(self,"models/x_y_new.pkl")
+            self.num_questions = cnt
+            self.num_answers = cnt
+            just.write(self, "models/x_y_new.pkl")
         else:
-            t=just.read("models/x_y_new.pkl")
-            self.x=t.x
-            self.y=t.y
-            self.num_questions=t.num_questions
-            self.num_answers=t.num_answers
+            t = just.read("models/x_y_new.pkl")
+            self.x = t.x
+            self.y = t.y
+            self.num_questions = t.num_questions
+            self.num_answers = t.num_answers
             del t
             gc.collect()
         del self.texts

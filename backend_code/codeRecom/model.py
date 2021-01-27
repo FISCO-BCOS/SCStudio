@@ -3,18 +3,20 @@ import just
 import numpy as np
 from tensorflow.keras.layers import Activation, Dense, LSTM, Bidirectional
 from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.optimizers import RMSprop,Adam
+from tensorflow.keras.optimizers import RMSprop, Adam
 from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras.backend import clear_session, set_session
 import tensorflow as tf
 
 
-
-
-
 class LSTMBase(object):
 
-    def __init__(self, model_name, encoder_decoder=None, hidden_units=128, base_path="models/"):
+    def __init__(
+            self,
+            model_name,
+            encoder_decoder=None,
+            hidden_units=128,
+            base_path="models/"):
         self.model_name = model_name
         self.h5_path = base_path + model_name + ".h5"
         self.pkl_path = base_path + model_name + ".pkl"
@@ -25,13 +27,14 @@ class LSTMBase(object):
             if os.path.isfile(self.pkl_path):
                 self.encoder_decoder = just.read(self.pkl_path)
             else:
-                self.encoder_decoder=encoder_decoder
+                self.encoder_decoder = encoder_decoder
         else:
             self.encoder_decoder = encoder_decoder
 
     def sample(self, preds, temperature=1.0):
         # helper function to sample an index from a probability array
-        # Small temperature will make the output more predictable, while big temperature will make the output more creative
+        # Small temperature will make the output more predictable, while big
+        # temperature will make the output more creative
         preds = np.asarray(preds).astype('float64')
         preds = np.log(preds) / temperature
         exp_preds = np.exp(preds)
@@ -45,19 +48,26 @@ class LSTMBase(object):
             model = self.load()
         return model
 
-
-
-    def predict(self, text, diversity, subsequent, decay, max_prediction_steps, break_at_token=None):
-        # diversity means the temperature value of the first token, and subsequent represent the temperature value of the subsequent characters.
+    def predict(
+            self,
+            text,
+            diversity,
+            subsequent,
+            decay,
+            max_prediction_steps,
+            break_at_token=None):
+        # diversity means the temperature value of the first token, and
+        # subsequent represent the temperature value of the subsequent
+        # characters.
         if self.model is None:
             self.model = self.build_model()
-            a=np.ones((1,1,2172))
+            a = np.ones((1, 1, 2172))
             self.model.predict(a)
         outputs = []
         for i in range(max_prediction_steps):
             X = self.encoder_decoder.encode_question(text)
             preds = self.model.predict(X, verbose=0)[0]
-            if i==0:
+            if i == 0:
                 diversity = diversity
             else:
                 diversity = subsequent
@@ -71,12 +81,12 @@ class LSTMBase(object):
         return self.encoder_decoder.untokenize(outputs)
 
     def tenSample(self, preds):
-        reslist=[]
+        reslist = []
 
         for i in range(10):
-            curtop=(np.argmax(preds))
+            curtop = (np.argmax(preds))
             reslist.append(curtop)
-            preds[curtop]=0
+            preds[curtop] = 0
 
         return reslist
 
@@ -85,7 +95,7 @@ class LSTMBase(object):
             self.model = self.build_model()
         outputs = []
 
-        X = self.encoder_decoder.encode_question(text) # 在这里面已经做了截取！
+        X = self.encoder_decoder.encode_question(text)  # 在这里面已经做了截取！
         try:
             preds = self.model.predict(X, verbose=0)[0]
         except Exception as e:
@@ -99,13 +109,10 @@ class LSTMBase(object):
 
         for answer_token in answer_tokens:
             new_text_token = self.encoder_decoder.decode_y(answer_token)
-            if 'UNKNOWN' not in new_text_token :
+            if 'UNKNOWN' not in new_text_token:
                 res.append(new_text_token)
 
         return res
 
-
     def load(self):
         return load_model(self.h5_path)
-        
-
