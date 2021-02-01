@@ -3,3 +3,5 @@ examples
 node_modules
 .vscode-test/
 *.vsix
+__pycache__/
+test/

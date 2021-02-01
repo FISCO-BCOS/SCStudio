@@ -19,6 +19,8 @@ import datetime
 import threading
 import logging
 import re
+import tempfile
+import functools
 from multiprocessing import Process
 from _vulnerabilities import VUL_MAPPING_TABLES, get_vul_info
 
@@ -47,8 +49,8 @@ def execute_command(contract_dir, cmd, timeout, output=None):
         output = open("/dev/null", "w")
 
     try:
-        subprocess.run(cmd, stderr=subprocess.STDOUT,
-                       timeout=timeout, check=True, stdout=output, shell=True)
+        subprocess.run(cmd, timeout=timeout, check=True,
+                       stdout=output, shell=True)
     except subprocess.TimeoutExpired as e:
         logging.warning(
             f"[execute_command]timeout occurs when running `{cmd}`, timeout: {timeout}s")
@@ -85,6 +87,7 @@ def run_myth(contract_dir, contract, timeout):
     # First, we use a specified regex expression to search first occurrence
     # of `pragma solidity` statement, and extract the version info inside it.
     # This method can cover most cases.
+    # TODO: Process cases such as `pragma solididy <0.4.26;`.
     content = open(os.path.join(contract_dir, contract)).read()
     version = re.search(
         r"pragma\s+solidity.*?(\d+.\d+.\d+)\s*;", content, re.DOTALL)
@@ -96,7 +99,10 @@ def run_myth(contract_dir, contract, timeout):
 
     cmd_prefix = f"docker run -v $(pwd):/tmp mythril/myth analyze /tmp/{contract} -t 3"
     execute_command(
-        contract_dir, f"{cmd_prefix} --solv {version}", timeout, __MYTH_REPORT_FILE)
+        contract_dir,
+        f"{cmd_prefix} --solv {version}",
+        timeout,
+        __MYTH_REPORT_FILE)
 
     # But unfortunately, in first try sometimes we may get a incorrect match,
     # for example, a `pragma solidity` statement written in comments. In this
@@ -108,7 +114,7 @@ def run_myth(contract_dir, contract, timeout):
         return
     content = open(report_path).read()
     if content.find("Source file requires different compiler version") != -1:
-        # Sometimes the error info is incomplete due to that the statement is 
+        # Sometimes the error info is incomplete due to that the statement is
         # written in multi-line, such as: `pragma \n solidity \n 0.5.7;`, which
         # is permitted by solidity syntax. So we need find out the start line
         # number first, and then search from that line.
@@ -118,9 +124,27 @@ def run_myth(contract_dir, contract, timeout):
         lines = open(contract_path).readlines()
         remain = "\n".join(lines[line_no - 1:])
         version = re.search(
-            r"pragma\s+solidity.*?(\d+.\d+.\d+)\s*;", remain, re.DOTALL).group(1)
+            r"pragma\s+solidity.*?(\d+.\d+.\d+)\s*;",
+            remain,
+            re.DOTALL).group(1)
         cmd = f"{cmd_prefix} --solv {version}"
         execute_command(contract_dir, cmd, timeout, __MYTH_REPORT_FILE)
+
+
+# Run backdoor detector
+def run_bdd(contract_dir, contract, timeout):
+    # Get bin of contract
+    bin_file = contract + ".hex"
+    cmd = f"solc --bin-runtime {contract} | tail -n 1"
+    execute_command(contract_dir, cmd, timeout, bin_file)
+
+    backdoor_detector_root = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), "backdoor_detector")
+    analyze_entry = os.path.sep.join(
+        [backdoor_detector_root, "MadMax", "bin", "analyze.sh"])
+    backdoor_datalog = os.path.join(backdoor_detector_root, "backdoor.dl")
+    cmd = " ".join([analyze_entry, bin_file, backdoor_datalog])
+    execute_command(contract_dir, cmd, timeout)
 
 
 def run_analysis_tools(contract_dir, contract, timeout):
@@ -129,6 +153,7 @@ def run_analysis_tools(contract_dir, contract, timeout):
     processes.append(Process(target=run_smart_check, args=args))
     processes.append(Process(target=run_oyente, args=args))
     processes.append(Process(target=run_myth, args=args))
+    processes.append(Process(target=run_bdd, args=args))
 
     for process in processes:
         process.start()
@@ -178,14 +203,57 @@ def processing_myth_report(contract_dir, vuls_recorder):
                 i += 1
 
 
-'''
-def processing_backdoor_detector_report(lineList, backdoorList):
-    length = len(backdoorList)
-    for i in range(length):
-        bdType = backdoorList[i]
-        lineNo = lineList[i]
-        vulMap[bdDict[bdType]].append(lineNo)
-'''
+def processing_bdd_report(contract_dir, contract, vuls_recorder):
+    ast_file = contract + ".ast"
+    cmd = f"solc --ast-compact-json {contract}"
+    execute_command(contract_dir, cmd, timeout, ast_file)
+
+    selector2name, fn2loc = {}, {}
+    with open(os.path.join(contract_dir, ast_file)) as f:
+        lines = f.readlines()
+        start = -1
+        for i, line in enumerate(lines):
+            print(line.strip())
+            if line.strip() == f"======= {contract} =======":
+                start = i
+                break
+        if start == -1:
+            return
+
+        ast = json.loads("".join(lines[start + 1:]))
+        contracts = [node for node in ast["nodes"] if node["nodeType"]
+                     == "ContractDefinition" and node["abstract"] == False]
+        for contract in contracts:
+            fns = [node for node in contract["nodes"] if node["nodeType"]
+                   == "FunctionDefinition" and node["kind"] == "function"]
+            for fn in fns:
+                name = fn["name"]
+                selector = fn["functionSelector"]
+                selector2name[selector] = name
+                start_pos = fn["src"].split(":")[0]
+                fn2loc[name] = start_pos
+    selectors = sorted(selector2name.keys(), key=lambda x: int(x, 16))
+
+    # Get suspect function name from ".csv" reports
+    reports = ['ArbitraryTransfer',
+               'GenerateToken',
+               'DestroyToken',
+               'FrozeAccount',
+               'DisableTransfer']
+
+    for report in reports:
+        report_path = os.path.join(contract_dir, report + ".csv")
+        if not validate_report(report_path):
+            continue
+
+        with open(report_path, 'r') as f:
+            lines = f.readlines()
+            for line in lines:
+                idx = int(line)
+                selector = selectors[idx]
+                fn_name = selector2name[selector]
+                line_no = fn2loc[fn_name]
+                vuls_recorder.record(report, line_no)
 
 
 def processing_oyente_report(contract_dir, vuls_recorder):
@@ -245,12 +313,17 @@ def processing_smart_check_report(contract_dir, vuls_recorder):
                 i += 1
 
 
-def processing_reports(contract_dir):
+def processing_reports(contract_dir, contract):
     vuls_recorder = VulsRecorder()
     processing_smart_check_report(contract_dir, vuls_recorder)
     processing_oyente_report(contract_dir, vuls_recorder)
     processing_myth_report(contract_dir, vuls_recorder)
+    processing_bdd_report(contract_dir, contract, vuls_recorder)
     return vuls_recorder
+
+
+def infer_contract_name(contract_dir):
+    return os.path.split(contract_dir)[1] + ".sol"
 
 
 if __name__ == '__main__':
@@ -282,10 +355,9 @@ if __name__ == '__main__':
     logging.basicConfig(
         format='[%(levelname)s][%(asctime)s]%(message)s', level=logging.DEBUG)
 
-    contract = os.path.split(contract_dir)[1] + ".sol"
-    #run_analysis_tools(contract_dir, contract, timeout)
-    vuls_recorder = processing_reports(contract_dir)
-
+    contract = infer_contract_name(contract_dir)
+    run_analysis_tools(contract_dir, contract, timeout)
+    vuls_recorder = processing_reports(contract_dir, contract)
     out_json = {
         "contractname": contract,
         "vulnerabilities": {}
