@@ -81,14 +81,9 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
                 tableItemHtml = tableItemHtml.replace(/!LEVEL!/, respos.level);
                 tableHtml = tableHtml+tableItemHtml;
           
-                fs.writeFile(FILEPATH, details, function (err) {
-                    if (err) {
-                        throw err;
-                    }
-                });
-
+                fs.writeFileSync(FILEPATH, details);
                 let range = document.lineAt(respos.lineNo[0]-1).range;
-                
+		
                 let severity : any;
                 severity = respos.level;
                 if (severity === 'error') {
@@ -108,11 +103,7 @@ export function updateDiagnostics(document: vscode.TextDocument | undefined, col
             tableHtml = tableHtml + tableSuffix;
             detailHtml = detailHtml + detailSuffix;
             let html = tableHtml + detailHtml;
-            fs.writeFile(htmlPath, html, function (err) {
-                if (err) {
-                    throw err;
-                }
-            });
+            fs.writeFileSync(htmlPath, html);
             // remove .txt file
             fs.unlinkSync(FILEPATH);
         }
