@@ -360,9 +360,9 @@ def processing_smart_check_report(contract_dir, vuls_recorder):
 
 def processing_reports(contract_dir, contract):
     vuls_recorder = VulsRecorder()
-    #processing_smart_check_report(contract_dir, vuls_recorder)
-    #processing_oyente_report(contract_dir, vuls_recorder)
-    #processing_myth_report(contract_dir, vuls_recorder)
+    processing_smart_check_report(contract_dir, vuls_recorder)
+    processing_oyente_report(contract_dir, vuls_recorder)
+    processing_myth_report(contract_dir, vuls_recorder)
     processing_bdd_report(contract_dir, contract, vuls_recorder)
     return vuls_recorder
 
