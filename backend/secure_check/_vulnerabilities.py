@@ -469,7 +469,7 @@ VUL_MAPPING_TABLES = {
         "callstack": 19
 
     },
-    "backdoor_detector": {
+    "bdd": {
         "ArbitraryTransfer": 50,
         "GenerateToken": 51,
         "DestroyToken": 52,

@@ -14,13 +14,8 @@ import os
 import sys
 import json
 import subprocess
-import time
-import datetime
-import threading
 import logging
 import re
-import tempfile
-import functools
 from multiprocessing import Process
 from _vulnerabilities import VUL_MAPPING_TABLES, get_vul_info
 
@@ -49,6 +44,7 @@ def execute_command(contract_dir, cmd, timeout, output=None):
         output = open("/dev/null", "w")
 
     try:
+        logging.debug(f"execute cmd: {cmd}")
         subprocess.run(cmd, timeout=timeout, check=True,
                        stdout=output, shell=True)
     except subprocess.TimeoutExpired as e:
@@ -76,19 +72,15 @@ def run_oyente(contract_dir, contract, timeout):
     execute_command(contract_dir, cmd, timeout)
 
 
-def run_myth(contract_dir, contract, timeout):
-    # Mythrill uses latest solc to compile contract, but when the version
-    # of latest solc is not match with compiler version which is indicated
-    # by `pragma solidity` statement in contract, Mythrill will refuse to
-    # check contract. To avoid being got stuck in above situation, we need
-    # to find the compiler version requirement in contract, and pass it to
-    # Mythrill via `--solv` option.
-
-    # First, we use a specified regex expression to search first occurrence
-    # of `pragma solidity` statement, and extract the version info inside it.
-    # This method can cover most cases.
-    # TODO: Process cases such as `pragma solididy <0.4.26;`.
+def indicate_compiler_version(contract_dir, contract):
+    # Removes comments first.
+    comment_regex = re.compile("\/\*[\s\S]*\*\/|\/\/.*")
     content = open(os.path.join(contract_dir, contract)).read()
+    content = comment_regex.sub("", content)
+
+    # Uses a specified regex expression to search first occurrence of `pragma solidity`
+    # statement, and extract the version info inside it. This method can cover most cases.
+    # TODO: Processes cases such as `pragma solididy <0.4.26;`.
     version = re.search(
         r"pragma\s+solidity.*?(\d+.\d+.\d+)\s*;", content, re.DOTALL)
     if version is None:
@@ -96,7 +88,17 @@ def run_myth(contract_dir, contract, timeout):
             "[run_myth]the contract has no `pragma solidity` stmt")
         return
     version = version.group(1)
+    return version
 
+
+def run_myth(contract_dir, contract, timeout):
+    # Mythrill uses latest solc to compile contract, but when the version
+    # of latest solc is not match with compiler version which is indicated
+    # by `pragma solidity` statement in contract, Mythrill will refuse to
+    # check contract. To avoid being got stuck in above situation, we need
+    # to find the compiler version requirement in contract, and pass it to
+    # Mythrill via `--solv` option.
+    version = indicate_compiler_version(contract_dir, contract)
     cmd_prefix = f"docker run -v $(pwd):/tmp mythril/myth analyze /tmp/{contract} -t 3"
     execute_command(
         contract_dir,
@@ -104,39 +106,21 @@ def run_myth(contract_dir, contract, timeout):
         timeout,
         __MYTH_REPORT_FILE)
 
-    # But unfortunately, in first try sometimes we may get a incorrect match,
-    # for example, a `pragma solidity` statement written in comments. In this
-    # case, we need to check whether the output of Mythrill still contains hint
-    # about mismatch of compiler version requirement. If it's true, we will
-    # extract actually version requirement from error info, and then try again.
-    report_path = os.path.join(contract_dir, __MYTH_REPORT_FILE)
-    if not validate_report(report_path):
-        return
-    content = open(report_path).read()
-    if content.find("Source file requires different compiler version") != -1:
-        # Sometimes the error info is incomplete due to that the statement is
-        # written in multi-line, such as: `pragma \n solidity \n 0.5.7;`, which
-        # is permitted by solidity syntax. So we need find out the start line
-        # number first, and then search from that line.
-        print(content)
-        line_no = int(re.search(r"(\d+) \|", content).group(1))
-        contract_path = os.path.join(contract_dir, contract)
-        lines = open(contract_path).readlines()
-        remain = "\n".join(lines[line_no - 1:])
-        version = re.search(
-            r"pragma\s+solidity.*?(\d+.\d+.\d+)\s*;",
-            remain,
-            re.DOTALL).group(1)
-        cmd = f"{cmd_prefix} --solv {version}"
-        execute_command(contract_dir, cmd, timeout, __MYTH_REPORT_FILE)
 
-
-# Run backdoor detector
+# `bdd` means backdoor detectors
 def run_bdd(contract_dir, contract, timeout):
-    # Get bin of contract
+    version = indicate_compiler_version(contract_dir, contract)
+    tmp_file = contract + ".tmp"
+    cmd = f"docker run -v $(pwd):/tmp ethereum/solc:{version} --bin-runtime /tmp/{contract} 2>/dev/null \
+        | tail -n 3"
+    execute_command(contract_dir, cmd, timeout, tmp_file)
+
+    sig_file = contract + ".sig"
     bin_file = contract + ".hex"
-    cmd = f"solc --bin-runtime {contract} | tail -n 1"
-    execute_command(contract_dir, cmd, timeout, bin_file)
+    cmd = f"sed -n \"1p\" {tmp_file} > {sig_file};\
+        sed -n \"3p\" {tmp_file} > {bin_file};\
+        rm -f {tmp_file}"
+    execute_command(contract_dir, cmd, timeout)
 
     backdoor_detector_root = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), "backdoor_detector")
@@ -203,36 +187,95 @@ def processing_myth_report(contract_dir, vuls_recorder):
                 i += 1
 
 
+class LineScopes:
+    class Scope:
+        def __init__(self, start, end):
+            self.start = start
+            self.end = end
+
+    def __init__(self, contract_dir, contract):
+        lines = open(os.path.join(contract_dir, contract)).readlines()
+        self.scopes = []
+
+        count = 0
+        for line in lines:
+            self.scopes.append(self.Scope(count, count + len(line)))
+            count += len(line)
+
+    def query(self, start_pos):
+        pri = 0
+        suf = len(self.scopes)
+
+        while True:
+            mid = (pri + suf) // 2
+            scope = self.scopes[mid]
+            if start_pos >= scope.start and start_pos <= scope.end:
+                return mid + 1
+            elif start_pos < scope.start:
+                suf = mid
+            elif start_pos > scope.end:
+                pri = mid
+
+
 def processing_bdd_report(contract_dir, contract, vuls_recorder):
-    ast_file = contract + ".ast"
-    cmd = f"solc --ast-compact-json {contract}"
-    execute_command(contract_dir, cmd, timeout, ast_file)
+    version = indicate_compiler_version(contract_dir, contract)
+    meta_file = contract + ".meta"
+    cmd = f"docker run -v $(pwd):/tmp ethereum/solc:{version} --combined-json hashes,ast \
+        /tmp/{contract} 2>/dev/null"
+    execute_command(contract_dir, cmd, timeout, meta_file)
 
-    selector2name, fn2loc = {}, {}
-    with open(os.path.join(contract_dir, ast_file)) as f:
-        lines = f.readlines()
-        start = -1
-        for i, line in enumerate(lines):
-            print(line.strip())
-            if line.strip() == f"======= {contract} =======":
-                start = i
-                break
-        if start == -1:
-            return
+    # Same to `sig_file` used in `run_bdd`. If you want to change this name,
+    # remember to change both simultaneously.
+    sig_file = contract + ".sig"
+    contract_name = open(os.path.join(contract_dir, sig_file)).read()
+    contract_name = re.search(r"======= (.*) =======", contract_name).group(1)
 
-        ast = json.loads("".join(lines[start + 1:]))
-        contracts = [node for node in ast["nodes"] if node["nodeType"]
-                     == "ContractDefinition" and node["abstract"] == False]
-        for contract in contracts:
-            fns = [node for node in contract["nodes"] if node["nodeType"]
-                   == "FunctionDefinition" and node["kind"] == "function"]
-            for fn in fns:
-                name = fn["name"]
-                selector = fn["functionSelector"]
-                selector2name[selector] = name
-                start_pos = fn["src"].split(":")[0]
-                fn2loc[name] = start_pos
-    selectors = sorted(selector2name.keys(), key=lambda x: int(x, 16))
+    selector2fn = {}
+    fn2loc = {}
+    line_scopes = LineScopes(contract_dir, contract)
+    exit()
+    with open(os.path.join(contract_dir, meta_file)) as f:
+        metadata = json.load(f)
+
+        # Collects selectors of contract functions.
+        # TODO: Supports function overloading
+        hashes = metadata["contracts"][contract_name]["hashes"]
+        for fn_name, hash in hashes.items():
+            selector2fn[hash] = fn_name.split("(")[0]
+
+        # Collects line number of contract functions.
+        sources = metadata["sources"]
+        key = list(sources.keys())[0]
+        ast = sources[key]["AST"]
+
+        children = ast["children"]
+        variable_decls = [
+            child for child in children if child["name"] == "VariableDeclaration"]
+        for var in variable_decls:
+            attrs = var["attributes"]
+            if attrs["stateVariable"] == True:
+                if attrs["visibility"] == "public":
+                    name = attrs["name"]
+                    del selector2fn[name]
+
+        contracts = [child for child in children if child["name"]
+                     == "ContractDefinition"]
+        contract = None
+        for i in range(len(contracts)):
+            if contracts[i]["attributes"]["name"] == contract_name.split(":")[-1]:
+                contract = contracts[i]
+        assert(contract is not None)
+
+        children = contract["children"]
+        fns = [child for child in children if child["name"]
+               == "FunctionDefinition"]
+        for fn in fns:
+            fn_name = fn["attributes"]["name"]
+            scope = fn["src"]
+            start_pos = int(scope.split(":")[0])
+            line_no = line_scopes.query(start_pos)
+            fn2loc[fn_name] = line_no
+    selectors = sorted(selector2fn.keys(), key=lambda x: int(x, 16))
 
     # Get suspect function name from ".csv" reports
     reports = ['ArbitraryTransfer',
@@ -240,6 +283,7 @@ def processing_bdd_report(contract_dir, contract, vuls_recorder):
                'DestroyToken',
                'FrozeAccount',
                'DisableTransfer']
+    vul_mapping_table = VUL_MAPPING_TABLES["bdd"]
 
     for report in reports:
         report_path = os.path.join(contract_dir, report + ".csv")
@@ -251,9 +295,10 @@ def processing_bdd_report(contract_dir, contract, vuls_recorder):
             for line in lines:
                 idx = int(line)
                 selector = selectors[idx]
-                fn_name = selector2name[selector]
+                fn_name = selector2fn[selector]
                 line_no = fn2loc[fn_name]
-                vuls_recorder.record(report, line_no)
+                vul_id = vul_mapping_table[report]
+                vuls_recorder.record(vul_id, line_no)
 
 
 def processing_oyente_report(contract_dir, vuls_recorder):
@@ -315,9 +360,9 @@ def processing_smart_check_report(contract_dir, vuls_recorder):
 
 def processing_reports(contract_dir, contract):
     vuls_recorder = VulsRecorder()
-    processing_smart_check_report(contract_dir, vuls_recorder)
-    processing_oyente_report(contract_dir, vuls_recorder)
-    processing_myth_report(contract_dir, vuls_recorder)
+    #processing_smart_check_report(contract_dir, vuls_recorder)
+    #processing_oyente_report(contract_dir, vuls_recorder)
+    #processing_myth_report(contract_dir, vuls_recorder)
     processing_bdd_report(contract_dir, contract, vuls_recorder)
     return vuls_recorder
 
@@ -330,6 +375,9 @@ if __name__ == '__main__':
     def abort(msg):
         print(msg)
         exit(-1)
+
+    if sys.platform != "darwin" and sys.platform != "linux":
+        abort("this program can only be executed on macOS or Linux platform")
 
     argc = len(sys.argv)
     if argc < 2 or argc > 3:
