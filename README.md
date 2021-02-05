@@ -1,53 +1,33 @@
-**Note:** you need to clone this repo using the `--recursive` flag since this repo has submodules, e.g.,
+# SCStudio 
 
-```
-git clone git@github.com:FISCO-BCOS/SCStudio.git --recursive
-```
+SCStudio is an extension of [VS Code](https://code.visualstudio.com/) for writing solidity contracts in a safe way.
 
+*This repository is currently maintained by Chenxi Li([@yxliang01](https://github.com/yxliang01)), Fucheng Ma([]()) and Meng Ren(). If you encounter any bugs or usage issues, please feel free to create an issue on [our issue tracker](https://github.com/melonproject/oyente/issues).*
 
+## Quick Start
 
-# SCStudio README
+### Smart contract security check**
 
-SCStudio is a vscode extension for writing solidity contracts in a safe way. 
+SCStudio use an ensemble analysis tool to check whether your smart contract is vulnerable. At present, SCStudio supports **56** kinds of common vulnerabilities such as 'Reentrancy', 'Overflow', 'TimeStamp Dependency' and 'Contract Backdoors'.
 
-The current version of SCStudio supports two ways to analyze your smart contracts. If you don't want to upload your contract to any server, we provide a docker image to let you check your code locally. Please first install `docker` for your system, you can follow the instructions [here](https://docs.docker.com/get-docker/). After installing `docker`, you need to pull the image of our contract analyzing tool by :
-```
-docker pull renardbebe/entools
-```
+You can type the following command in VS Code to verify your smart contract:
 
-Meanwhile, if you want to use a web service to analyze the contract, you need first use the following command to enable the web service.
-```
-SCStudio: Enable the web service
-```
-Then, please set the url of your web service by the following command:
-```
-SCStudio: Set the url of the web service
-```
-
-
-
-## Features
-
-For now, SCStudio provides such features:
-
-**a) Smart contract security check**
-
-SCStudio use an ensemble analysis tool to check whether there is a vulnerability in the current smart contract. At present, SCStudio supports 56 kinds of common vulnerabilities such as 'Reentrancy', 'Overflow', 'TimeStamp Dependency' and 'Contract Backdoors'.
-
-In order to use this function, the developer can use the following command:
 ```
 SCStudio: Analyze Contract
 ```
+
 By default, the time limit for each contract is set as 60 seconds.
 You can set the time limit by using the following command:
-```
+
+```txt
 SCStudio: Set Maximum Wait-time for Security Analysis
 ```
+
 Now, the time limit for each contract is set as 10 seconds.
 
 ![Feature_Security_Check](img/secure.gif)
 
-**b) Next token suggestion**
+### Next token suggestion**
 
 SCStudio provides a suggestion for the next token. This is useful for a solidity beginner.
 
@@ -73,6 +53,50 @@ SCStudio supports api completion for common structs in solidity language such as
 **d) Highlight**
 SCStudio implements a highlight feature for solidity language.
 
+## Use SCStudio in VS Code
+
+The current version of SCStudio supports two ways to analyze your smart contracts. If you don't want to upload your contract to any server, we provide a docker image to let you check your code locally. Please first install `docker` for your system, you can follow the instructions [here](https://docs.docker.com/get-docker/). After installing `docker`, you need to pull the image of our contract analyzing tool by :
+
+```bash
+docker pull renardbebe/entools
+```
+
+Meanwhile, if you want to use a web service to analyze the contract, you need first use the following command to enable the web service.
+
+```
+SCStudio: Enable the web service
+```
+
+Then, please set the url of your web service by the following command:
+```
+SCStudio: Set the url of the web service
+```
+
+
+# How to use SCStudio?
+
+
+## How to run backend of SCStudio
+
+### Prerequisite
+
+- SmartCheck
+
+```bash
+# You need to install npm first
+java 8
+npm install @smartdec/smartcheck -g
+```
+
+- Oyente
+
+```bash
+```
+
+- Mythrill
+
+```bash
+```
 
 ## Usage
 
