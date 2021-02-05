@@ -2,11 +2,11 @@
 
 SCStudio is an extension of [VS Code](https://code.visualstudio.com/) for writing solidity contracts in a safe way.
 
-*This repository is currently maintained by Chenxi Li([@yxliang01](https://github.com/yxliang01)), Fucheng Ma([]()) and Meng Ren(). If you encounter any bugs or usage issues, please feel free to create an issue on [our issue tracker](https://github.com/melonproject/oyente/issues).*
+*This repository is currently maintained by Chenxi Li([@yxliang01](https://github.com/yxliang01)), Fucheng Ma([@fCorleone](https://github.com/fCorleone)) and Meng Ren([@renardbebe](https://github.com/renardbebe)). If you encounter any bugs or usage issues, please feel free to create an issue on [our issue tracker](https://github.com/melonproject/oyente/issues).*
 
 ## Quick Start
 
-### Smart contract security check**
+### Smart contract security check
 
 SCStudio use an ensemble analysis tool to check whether your smart contract is vulnerable. At present, SCStudio supports **56** kinds of common vulnerabilities such as 'Reentrancy', 'Overflow', 'TimeStamp Dependency' and 'Contract Backdoors'.
 
@@ -27,7 +27,7 @@ Now, the time limit for each contract is set as 10 seconds.
 
 ![Feature_Security_Check](img/secure.gif)
 
-### Next token suggestion**
+### Next token suggestion
 
 SCStudio provides a suggestion for the next token. This is useful for a solidity beginner.
 
