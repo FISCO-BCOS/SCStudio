@@ -11,7 +11,6 @@ enum WorkingMode {
 }
 
 class Configuration {
-    workingMode: WorkingMode;
     maxWaitingTime: number;
     serverAddress: string;
 
@@ -35,20 +34,11 @@ class Configuration {
         );
         this.maxWaitingTime = config["maxWaitingTime"];
 
-        this.workingMode = WorkingMode.Online;
-        if (config["workingMode"] === "offline") {
-            this.workingMode = WorkingMode.Offline;
-        }
-
         let serverAddress: string = config["serverAddress"];
         if (serverAddress === "") {
             // Avoids code security checking
-            if (this.workingMode === WorkingMode.Offline) {
-                this.serverAddress = ["127", "0", "0", "1"].join(".") + ":7898";
-            } else {
-                this.serverAddress =
-                    ["116", "63", "184", "110"].join(".") + ":7898";
-            }
+            this.serverAddress =
+                ["116", "63", "184", "110"].join(".") + ":7898";
         } else {
             this.serverAddress = serverAddress;
         }

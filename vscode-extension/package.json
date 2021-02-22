@@ -41,29 +41,11 @@
     "main": "./out/extension.js",
     "contributes": {
         "configuration": {
-            "type": "object",
             "title": "SCStudio",
             "properties": {
-                "SCStudio.workingMode": {
-                    "type": "string",
-                    "default": "online",
-                    "enum": [
-                        "online",
-                        "offline"
-                    ],
-                    "enumDescriptions": [
-                        "During analysis, SCStudio will upload your contract to remote server. This mode requires available network connection",
-                        "During analysis, SCStudio acquires results from backend server running locally"
-                    ]
-                },
-                "SCStudio.enableIntelliSense": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Enables or disables IntelliSense provided by SCStudio"
-                },
                 "SCStudio.serverAddress": {
                     "type": "string",
-                    "pattern": "^((\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])\\.){3}(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])\\.)\\s*:\\s*(\\d|[1-9]\\d{1,3}|[1-5]\\d{4}|6[0-4]\\d{3}|65[0-4]\\d{2}|655[0-2]\\d|6553[0-5])$",
+                    "pattern": "^((\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])\\.){3}(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])\\s*:\\s*(\\d|[1-9]\\d{1,3}|[1-5]\\d{4}|6[0-4]\\d{3}|65[0-4]\\d{2}|655[0-2]\\d|6553[0-5])$",
                     "markdownDescription": "The address of the backend server, which is in `{IP}:{port}` format"
                 },
                 "SCStudio.maxWaitingTime": {
