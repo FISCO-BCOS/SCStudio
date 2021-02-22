@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width initial-scale=1" />
+        <title>Analysis Report</title>
+        <link
+            rel="stylesheet"
+            href="<%-resourcePath%>/css/highlight/default.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="<%-resourcePath%>/css/theme/default.css"
+        />
+        <script src="<%-resourcePath%>/script/highlight/highlight.min.js"></script>
+        <script>
+            hljs.initHighlightingOnLoad();
+        </script>
+    </head>
+    <body class='typora-export'>
+        <div id='write' class='is-mac'>
+            <blockquote>
+                Powered by SCStudio, a unified smart contract development platform
+                produced by <strong>WeBank</strong> and <strong>Tsinghua University</strong>.
+            </blockquote>
+            <h1><span>Contract Code</span></h1>
+            <pre><code class="javascript"><%- codeLines.join("\n") %></code>
+            </pre>
+            <h1><span>Overview</span></h1>
+            <figure>
+                <table>
+                    <thead>
+                        <tr>
+                            <th><span>Vulnerabilities</span></th>
+                            <th><span>Lines</span></th>
+                            <th><span>Level</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(let i = 0; i < vulnerabilities.length; ++i) { %>
+                        <tr>
+                            <td><span> <%- vulnerabilities[i].name %> </span></td>
+                            <td><span> <%- vulnerabilities[i].lineNo %> </span></td>
+                            <td><span> <%- vulnerabilities[i].level %> </span></td>
+                        </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </figure>
+            <% for(let i = 0; i < vulnerabilities.length; ++i) { %>
+            <h2>
+                <span>Vulnerability: </span
+                ><code> <%- vulnerabilities[i].name %> </code>
+            </h2>
+            <figure>
+                <table>
+                    <thead>
+                        <tr>
+                            <th><span>Lines</span></th>
+                            <th><span>Level</span></th>
+                            <th><span>SWC ID</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span> <%- vulnerabilities[i].lineNo %> </span></td>
+                            <td><span> <%- vulnerabilities[i].level %> </span></td>
+                            <td><span> <%- vulnerabilities[i].swcId %> </span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </figure>
+            <h3><span>Description</span></h3>
+            <p><span> <%-vulnerabilities[i].description %> </span></p>
+            <h3><span>Advice</span></h3>
+            <p><span> <%-vulnerabilities[i].advice %> </span></p>
+            <h3><span>Code Snippets</span></h3>
+            <ul>
+                <% for(let j of vulnerabilities[i].lineNo) { %>
+                    <li><h5>At line <%- j %>:</h5></li><pre><code class="javascript"><%- codeLines[j - 1].trim() %></code></pre>
+                <% } %> <% } %>
+            </ul>
+        </body>
+    </div>
+</html>

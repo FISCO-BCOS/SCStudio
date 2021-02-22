@@ -1,3 +1,0 @@
-[submodule "backend_code/secureCheck/backdoorDetector"]
-	path = backend_code/secureCheck/backdoorDetector
-	url = https://github.com/renardbebe/backdoorDetector

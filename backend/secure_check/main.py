@@ -47,12 +47,15 @@ def execute_command(contract_dir, cmd, timeout, output=None):
         logging.debug(f"execute cmd: {cmd}")
         subprocess.run(cmd, timeout=timeout, check=True,
                        stdout=output, shell=True)
+        return True
     except subprocess.TimeoutExpired as e:
         logging.warning(
             f"[execute_command]timeout occurs when running `{cmd}`, timeout: {timeout}s")
+        return False
     except Exception as e:
         logging.warning(
             f"[execute_command]error occurs when running `{cmd}`, output: {e}")
+        return False
     finally:
         output.close()
         os.chdir(cwd)
@@ -88,7 +91,17 @@ def indicate_compiler_version(contract_dir, contract):
             "[run_myth]the contract has no `pragma solidity` stmt")
         return
     version = version.group(1)
-    return version
+    if version.startswith("0.4"):
+        return "0.4.26"
+    if version.startswith("0.5"):
+        return "0.5.17"
+    if version.startswith("0.6"):
+        return "0.6.12"
+    if version.startswith("0.7"):
+        return "0.7.6"
+    if version.startswith("0.8"):
+        return "0.8.1"
+    return None
 
 
 def run_myth(contract_dir, contract, timeout):
@@ -99,7 +112,7 @@ def run_myth(contract_dir, contract, timeout):
     # to find the compiler version requirement in contract, and pass it to
     # Mythrill via `--solv` option.
     version = indicate_compiler_version(contract_dir, contract)
-    cmd_prefix = f"docker run -v $(pwd):/tmp mythril/myth analyze /tmp/{contract} -t 3"
+    cmd_prefix = f"docker run -v $(pwd):/tmp mythril/myth analyze /tmp/{contract} -t 1"
     execute_command(
         contract_dir,
         f"{cmd_prefix} --solv {version}",
@@ -127,7 +140,7 @@ def run_bdd(contract_dir, contract, timeout):
     analyze_entry = os.path.sep.join(
         [backdoor_detector_root, "MadMax", "bin", "analyze.sh"])
     backdoor_datalog = os.path.join(backdoor_detector_root, "backdoor.dl")
-    cmd = " ".join([analyze_entry, bin_file, backdoor_datalog])
+    cmd = " ".join(["bash", analyze_entry, bin_file, backdoor_datalog])
     execute_command(contract_dir, cmd, timeout)
 
 
@@ -222,7 +235,7 @@ def processing_bdd_report(contract_dir, contract, vuls_recorder):
     meta_file = contract + ".meta"
     cmd = f"docker run -v $(pwd):/tmp ethereum/solc:{version} --combined-json hashes,ast \
         /tmp/{contract} 2>/dev/null"
-    execute_command(contract_dir, cmd, timeout, meta_file)
+    execute_command(contract_dir, cmd, None, meta_file)
 
     # Same to `sig_file` used in `run_bdd`. If you want to change this name,
     # remember to change both simultaneously.
@@ -233,7 +246,6 @@ def processing_bdd_report(contract_dir, contract, vuls_recorder):
     selector2fn = {}
     fn2loc = {}
     line_scopes = LineScopes(contract_dir, contract)
-    exit()
     with open(os.path.join(contract_dir, meta_file)) as f:
         metadata = json.load(f)
 
@@ -385,7 +397,8 @@ if __name__ == '__main__':
             f"usage: python3 {sys.argv[0]} <contract_dir> [timeout]")
 
     contract_dir = sys.argv[1]
-    if not os.path.exists(contract_dir):
+    contract_dir = os.path.dirname(contract_dir + os.path.sep)
+    if not os.path.exists(contract_dir) or not os.path.isdir(contract_dir):
         abort(f"the path is not exist: {contract_dir}")
 
     timeout = 60
@@ -394,8 +407,10 @@ if __name__ == '__main__':
         error = f"invalid timeout `{arg}`, which is expected to be a positive number"
         try:
             timeout = int(arg)
-            if not timeout > 0:
+            if not timeout >= 0:
                 abort(error)
+            if timeout == 0:
+                timeout = None
         except Exception as _:
             abort(error)
 
@@ -406,15 +421,12 @@ if __name__ == '__main__':
     contract = infer_contract_name(contract_dir)
     run_analysis_tools(contract_dir, contract, timeout)
     vuls_recorder = processing_reports(contract_dir, contract)
-    out_json = {
-        "contractname": contract,
-        "vulnerabilities": {}
-    }
+    out_json = {}
     for vul_id, lines in vuls_recorder:
         vul_info = get_vul_info(vul_id)
         if vul_info.level != "ignore":
-            out_json["vulnerabilities"][vul_id] = {}
-            vul = out_json["vulnerabilities"][vul_id]
+            out_json[vul_id] = {}
+            vul = out_json[vul_id]
             vul["name"] = vul_info.name
             vul["description"] = vul_info.desc
             vul["swcId"] = vul_info.swc
@@ -422,7 +434,6 @@ if __name__ == '__main__':
             vul["advice"] = vul_info.advice
             vul["level"] = vul_info.level
     js = json.dumps(out_json, sort_keys=True, indent=4, separators=(',', ':'))
-    print(js)
 
     with open(os.path.join(contract_dir, "final_report.json"), "w") as f:
         json.dump(out_json, f, indent=1)

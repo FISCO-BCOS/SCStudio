@@ -2,7 +2,7 @@
 
 SCStudio is an extension of [VS Code](https://code.visualstudio.com/) for writing solidity contracts in a safe way.
 
-*This repository is currently maintained by Chenxi Li([@yxliang01](https://github.com/yxliang01)), Fucheng Ma([@fCorleone](https://github.com/fCorleone)) and Meng Ren([@renardbebe](https://github.com/renardbebe)). If you encounter any bugs or usage issues, please feel free to create an issue on [our issue tracker](https://github.com/melonproject/oyente/issues).*
+*This repository is currently maintained by Chenxi Li([@vita-dounai](https://github.com/vita-dounai)), Fucheng Ma([@fCorleone](https://github.com/fCorleone)) and Meng Ren([@renardbebe](https://github.com/renardbebe)). If you encounter any bugs or usage issues, please feel free to create an issue on [our issue tracker](https://github.com/FISCO-BCOS/SCStudio/issues).*
 
 ## Quick Start
 
@@ -73,31 +73,6 @@ SCStudio: Set the url of the web service
 ```
 
 
-# How to use SCStudio?
-
-
-## How to run backend of SCStudio
-
-### Prerequisite
-
-- SmartCheck
-
-```bash
-# You need to install npm first
-java 8
-npm install @smartdec/smartcheck -g
-```
-
-- Oyente
-
-```bash
-```
-
-- Mythrill
-
-```bash
-```
-
 ## Usage
 
 The current version of SCStudio is still under development. You can only use it by cloning the repository and run the extension in debugging mode. You can use this tool by the followint commands:
@@ -109,7 +84,6 @@ npm install
 # install dependency-extension
 code --install-extension philhindle.errorlens
 code --install-extension JuanBlanco.solidity
-code --install-extension atishay-jain.all-autocomplete
 # launch vscode
 code .
 ```
