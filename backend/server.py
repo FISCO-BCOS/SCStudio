@@ -9,7 +9,9 @@ from flask import Flask, request
 
 app = Flask(__name__)
 cur_dir = os.path.dirname(__file__)
-contracts_dir = os.path.join(cur_dir, "contracts")
+
+# Uses absolute path to mount volume in Docker
+contracts_dir = "/tmp/contracts"
 secure_check_dir = os.path.join(cur_dir, "secure_check")
 
 

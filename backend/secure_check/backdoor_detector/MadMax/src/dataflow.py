@@ -57,13 +57,13 @@ def analyse_graph(cfg: tac_cfg.TACGraph) -> Dict[str, Any]:
     if settings.analytics:
         anal_results["bailout"] = False
     bail_time = settings.bailout_seconds
-    start_clock = time.perf_counterer()
+    start_clock = time.clock()
     i = 0
 
     # Perform the stack analysis until we reach a fixed-point or a max is
     # exceeded. We alternately infer new edges that can be inferred.
     while i != settings.max_iterations:
-        loop_start_clock = time.perf_counter()
+        loop_start_clock = time.clock()
         i += 1
         modified = stack_analysis(cfg)
         modified |= cfg.clone_ambiguous_jump_blocks()
@@ -72,8 +72,8 @@ def analyse_graph(cfg: tac_cfg.TACGraph) -> Dict[str, Any]:
 
         # If the next analysis step will require more than the remaining time
         # or we have already exceeded our time budget, break out.
-        loop_time = time.perf_counter() - loop_start_clock
-        elapsed = time.perf_counter() - start_clock
+        loop_time = time.clock() - loop_start_clock
+        elapsed = time.clock() - start_clock
         if bail_time >= 0:
             if elapsed > bail_time or 2 * loop_time > bail_time - elapsed:
                 logging.info("Bailed out after %s seconds", elapsed)
