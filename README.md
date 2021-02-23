@@ -64,7 +64,7 @@ docker pull mythril/myth
 # 安装Oyente
 docker pull qspprotocol/oyente-0.4.25
 # 根据合约中要求的Solidity编译器版本安装Solidity编译器
-# 此处以安装0.4.26版本的Solidity编译器版本为例
+# 此处以安装0.4.26版本的Solidity编译器为例
 docker pull ethereum/solc:0.4.26
 # 安装检测服务
 docker pull lichenxiwebank/scstudio_backend:1.0.0
