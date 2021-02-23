@@ -56,7 +56,7 @@ SCStudio 的配置项位于`文件 -> 首选项 -> 设置 -> 扩展 -> SCStudio`
 
 若`Server Address`配置项设置为空，则在合约代码分析过程中，SCStudio 会将合约代码提交至仅用于试用的示例服务器，以获取检测服务。由于示例服务器的资源有限，此过程可能会不稳定或耗时较长，同时，由于示例服务器运行于公网环境，可能会造成合约内容的外泄。因此对于对用户体验及隐私性有较高需求的用户，推荐在本地部署检测服务。
 
-检测服务依赖于 Docker，因此部署服务前需要在本地预先[安装](https://www.docker.com/get-started)Docker，同时，由于检测服务所依赖的部分 Docker 特性在 Windows 上尚未支持，因此当前检测服务仅能运行于 macOS 或 Linux 环境中，部署过程如下：
+检测服务依赖于 Docker，因此部署服务前需要在本地预先[安装](https://www.docker.com/get-started)Docker，当前检测服务能够运行于 macOS 、 Linux 或安装有 WSL2 的 Windows 环境中，部署过程如下：
 
 ```bash
 # 安装Mythril
