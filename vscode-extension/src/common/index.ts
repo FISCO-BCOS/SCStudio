@@ -1,5 +1,4 @@
 import axios from "axios";
-import * as vscode from "vscode";
 
 export async function postRequest<Response>(
     request: string,
