@@ -30,7 +30,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Standard lib imports
-import os, sys
+from src import settings, tac_cfg, dataflow, exporter
+import os
+import sys
 import argparse
 import logging
 from os.path import abspath, dirname, join
@@ -38,7 +40,6 @@ from os.path import abspath, dirname, join
 # Prepend .. to $PATH so the project modules can be imported below
 src_path = join(dirname(abspath(__file__)), "..")
 sys.path.insert(0, src_path)
-from src import settings, tac_cfg, dataflow, exporter
 
 # Local project imports
 

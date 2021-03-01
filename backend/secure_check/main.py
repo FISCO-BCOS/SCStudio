@@ -77,7 +77,7 @@ def run_oyente(contract_dir, contract, timeout):
 
 def indicate_compiler_version(contract_dir, contract):
     # Removes comments first.
-    comment_regex = re.compile("\/\*[\s\S]*\*\/|\/\/.*")
+    comment_regex = re.compile("\\/\\*[\\s\\S]*\\*\\/|\\/\\/.*")
     content = open(os.path.join(contract_dir, contract)).read()
     content = comment_regex.sub("", content)
 
@@ -265,7 +265,7 @@ def processing_bdd_report(contract_dir, contract, vuls_recorder):
             child for child in children if child["name"] == "VariableDeclaration"]
         for var in variable_decls:
             attrs = var["attributes"]
-            if attrs["stateVariable"] == True:
+            if attrs["stateVariable"]:
                 if attrs["visibility"] == "public":
                     name = attrs["name"]
                     del selector2fn[name]
@@ -274,7 +274,8 @@ def processing_bdd_report(contract_dir, contract, vuls_recorder):
                      == "ContractDefinition"]
         contract = None
         for i in range(len(contracts)):
-            if contracts[i]["attributes"]["name"] == contract_name.split(":")[-1]:
+            if contracts[i]["attributes"]["name"] == contract_name.split(
+                    ":")[-1]:
                 contract = contracts[i]
         assert(contract is not None)
 

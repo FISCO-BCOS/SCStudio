@@ -32,7 +32,8 @@ def contract_analysis():
     try:
         subprocess.run(
             f"python3 {os.path.join(secure_check_dir, 'main.py')} {contract_dir} {timeout}",
-            check=True, shell=True)
+            check=True,
+            shell=True)
     except Exception as e:
         logging.warning(
             f"[execute_command]error occurs, message: {e}")
