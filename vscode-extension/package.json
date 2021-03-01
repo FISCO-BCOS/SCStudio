@@ -1,12 +1,13 @@
 {
     "name": "scstudio-vscode-extension",
     "displayName": "SCStudio",
-    "description": "Make smart contract development more secure",
+    "description": "Making smart contract development more secure",
     "version": "1.0.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/FISCO-BCOS/SCStudio.git"
     },
+    "icon": "static/img/logo.png",
     "publisher": "vita-dounai",
     "contributors": [
         {
@@ -32,8 +33,7 @@
     },
     "categories": [
         "Programming Languages",
-        "Linters",
-        "Testing"
+        "Linters"
     ],
     "activationEvents": [
         "onLanguage:solidity"
