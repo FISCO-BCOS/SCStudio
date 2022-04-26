@@ -2,7 +2,7 @@
 
 SCStudio 是一款针对 Solidity 合约的安全分析工具。在[Visual Studio Code](https://code.visualstudio.com/)（VS Code）开发环境下，开发者可通过 SCStudio 提供的 VS Code 扩展，在合约的开发过程中使用 SCStudio 进行实时安全性检查。SCStudio 由[清华大学软件系统安全保障小组](http://www.wingtecher.com/)开发并贡献。
 
-_当前，本项目由[fCorleone](https://github.com/fCorleone)（清华大学）、[renardbebe](https://github.com/renardbebe)（清华大学）及 [vita-dounai](https://github.com/vita-dounai)（微众银行）负责维护。 如果你在使用过程中遇到了任何问题，请移步至[issue 区](https://github.com/FISCO-BCOS/SCStudio/issues)提交 issue。_
+_当前，本项目由[fCorleone](https://github.com/fCorleone)（清华大学）及[renardbebe](https://github.com/renardbebe)（清华大学）负责维护。 如果你在使用过程中遇到了任何问题，请移步至[issue 区](https://github.com/FISCO-BCOS/SCStudio/issues)提交 issue。_
 
 ## 一、快速开始
 
